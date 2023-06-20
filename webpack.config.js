@@ -1,10 +1,10 @@
 const path = require("path")
 
 module.exports = {
-  entry: "./app/Main.js",
+  entry: "./src/Main.js",
   output: {
     publicPath: "/",
-    path: path.resolve(__dirname, "app"),
+    path: path.resolve(__dirname, "src"),
     filename: "bundled.js"
   },
   mode: "development",
@@ -12,7 +12,7 @@ module.exports = {
   devServer: {
     port: 3030,
     static: {
-      directory: path.join(__dirname, "app")
+      directory: path.join(__dirname, "src")
     },
     hot: true,
     liveReload: false,
@@ -29,7 +29,12 @@ module.exports = {
             presets: ["@babel/preset-react", ["@babel/preset-env", { targets: { node: "12" } }]]
           }
         }
-      }
+      },
+      {
+        test: /\.css$/i,
+        include: path.resolve(__dirname, 'src'),
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
+      },
     ]
   }
 }
