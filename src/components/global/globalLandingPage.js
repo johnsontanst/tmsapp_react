@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, localStorage } from "react";
 
 
 function GlobalLandingPage() {

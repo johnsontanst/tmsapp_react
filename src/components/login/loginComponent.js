@@ -1,20 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState, useContext } from "react";
 import Axios from "axios";
+import  { useNavigate } from 'react-router-dom'
+
+//Import contexts
+import DispatchContext from "../../DispatchContext";
+import StateContext from "../../StateContext";
 
 function LoginForm() {
   const [username, usernameFunc] = useState();
   const [password, passwordFunc] = useState();
+  const navigate = useNavigate();
+
+  //Contexts
+  const srcDispatch = useContext(DispatchContext);
+  const srcState = useContext(StateContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
     try{
-      await Axios.get('http://localhost:3000/').then((data)=>{
-        console.log(data);
+      await Axios.post('http://localhost:3000/login', {username, password}).then((data)=>{
+        if(data.data.success){
+          localStorage.setItem("authToken", data.data.token);
+          localStorage.setItem("username", data.data.username);
+          localStorage.setItem("group", data.data.group);
+          console.log(localStorage.getItem("group"));
+          srcDispatch({type:"login"});
+          return navigate("/");
+        }
+        else{
+          srcDispatch({type:"flashMessage", value:"Login error, pelase try again"});
+        }
       })
 
     }
     catch(e){
-      alert(e);
+      srcDispatch({type:"flashMessage", value:"Login error, pelase try again"});
     }
   }
 
