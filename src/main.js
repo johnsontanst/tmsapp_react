@@ -10,6 +10,7 @@ import Header from './components/global/headerComponent';
 import GlobalLandingPage from "./components/global/globalLandingPage";
 import LoginForm from "./components/login/loginComponent";
 import FlashMessage from "./components/global/flashMessageComponent";
+import AccountsOverview from "./components/admin/accountsOverviewComponent";
 
 //Tailwindcss
 import './main.css';
@@ -18,6 +19,7 @@ import './main.css';
 //Contexts
 import StateContext from "./StateContext"
 import DispatchContext from "./DispatchContext"
+import MyProfile from "./components/profile/myProfileComponent";
 
 
 function MainComponent(){
@@ -26,25 +28,20 @@ function MainComponent(){
     const initialState ={
         logIn: Boolean(localStorage.getItem('authToken')),
         flashMessage : [],
-        user : {
-            username : localStorage.getItem('username'),
-            authToken: localStorage.getItem('authToken'),
-            group: localStorage.getItem('group')
-        }
+        username: localStorage.getItem('username'),
+        group: localStorage.getItem('group')
     }
 
     function mainReducer(draft, action){
         switch(action.type){
             case"login":
                 draft.logIn = true;
-                draft.user = action.data;
                 return
             case"logout":
                 draft.logIn = false;
                 return
             case "flashMessage":                
                 draft.flashMessage.push(action.value);
-                console.log(Array.from(draft.flashMessage));
                 return
         }
     }
@@ -53,7 +50,6 @@ function MainComponent(){
     const [state, dispatch] = useImmerReducer(mainReducer, initialState);
 
     //useEffect
-    console.log(state.user.group);
 
     return (
         <StateContext.Provider value={state}>
@@ -64,6 +60,8 @@ function MainComponent(){
                     <Routes>
                         <Route path="/" element={<GlobalLandingPage />} />
                         <Route path="/login" element={<LoginForm />}/>
+                        <Route path="/profile" element={<MyProfile />}/>
+                        <Route path="/allusers" element={<AccountsOverview />} />
                     </Routes>
                     <Footer />
                 </BrowserRouter>

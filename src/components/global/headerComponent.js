@@ -29,10 +29,10 @@ function Header() {
 
           <div className="menu">
             <li>
-              {srcContext.user.group === "admin" ? <Link to="/">User management page</Link> : ""}
+              {localStorage.getItem('group') === "admin" ? <Link to="/allusers">User management page</Link> : ""}
             </li>
             <li>
-              <Link to="/">Profile</Link>
+              <Link to="/profile">Profile</Link>
             </li>
 
             <li>

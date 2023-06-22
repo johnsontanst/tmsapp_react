@@ -23,7 +23,6 @@ function LoginForm() {
           localStorage.setItem("authToken", data.data.token);
           localStorage.setItem("username", data.data.username);
           localStorage.setItem("group", data.data.group);
-          console.log(localStorage.getItem("group"));
           srcDispatch({type:"login"});
           return navigate("/");
         }
@@ -42,7 +41,7 @@ function LoginForm() {
     <>
 
       <div className="shadow-md rounded content-center">
-        <form className="loginForm" onSubmit={handleSubmit}>
+        <form className="loginForm" onSubmit={handleSubmit} method="POST">
           <label htmlFor="username">Username</label>
           <input
             type="text"
