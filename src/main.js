@@ -11,6 +11,7 @@ import GlobalLandingPage from "./components/global/globalLandingPage";
 import LoginForm from "./components/login/loginComponent";
 import FlashMessage from "./components/global/flashMessageComponent";
 import AccountsOverview from "./components/admin/accountsOverviewComponent";
+import AdminEditUser from "./components/admin/adminEditUserComponent";
 
 //Tailwindcss
 import './main.css';
@@ -50,6 +51,10 @@ function MainComponent(){
     const [state, dispatch] = useImmerReducer(mainReducer, initialState);
 
     //useEffect
+    useEffect(()=>{
+        const cook = document.cookie.split(';');
+        console.log(cook);
+    }, [])
 
     return (
         <StateContext.Provider value={state}>
@@ -62,6 +67,7 @@ function MainComponent(){
                         <Route path="/login" element={<LoginForm />}/>
                         <Route path="/profile" element={<MyProfile />}/>
                         <Route path="/allusers" element={<AccountsOverview />} />
+                        <Route path="/admin/user/profile" element={<AdminEditUser/>} />
                     </Routes>
                     <Footer />
                 </BrowserRouter>

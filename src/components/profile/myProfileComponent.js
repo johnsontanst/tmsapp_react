@@ -20,7 +20,7 @@ function MyProfile() {
 
     async function getProfile(){
         try{
-            const res = await Axios.post('http://localhost:3000/profile', {authTokenC:localStorage.getItem('authToken')});
+            const res = await Axios.post('http://localhost:3000/profile', {authTokenC:localStorage.getItem('authToken')}, {withCredentials:true});
             if(res.data.success){
                 setUsername(res.data.username);
                 setEmail(res.data.email);

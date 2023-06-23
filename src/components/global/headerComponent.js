@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useReducer, useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
+import Axios from "axios";
 
 //Import contexts
 import StateContext from "../../StateContext";
@@ -12,11 +13,32 @@ function Header() {
   const navigate = useNavigate();
 
   //Logout
-  function logoutFunc(){
+  async function logoutFunc(){
+
+    const logoutResult = await Axios.post("http://localhost:3000/logout", {}, {withCredentials: true});
+    if(logoutResult.data.success){
+      //Clear localstorage
+      localStorage.clear();
+
+      //Set useState logIn to false
+      srcDispatch({type:"logout"});
+
+      localStorage.removeItem('authToken');
+
+      return navigate('/login');
+    }
     //Clear localstorage
     localStorage.clear();
+
     //Set useState logIn to false
     srcDispatch({type:"logout"});
+
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+
     return navigate('/login');
   }
 
@@ -32,7 +54,7 @@ function Header() {
               {localStorage.getItem('group') === "admin" ? <Link to="/allusers">User management page</Link> : ""}
             </li>
             <li>
-              <Link to="/profile">Profile</Link>
+              {srcContext.logIn ? <Link to="/profile">Profile</Link> : ""}
             </li>
 
             <li>

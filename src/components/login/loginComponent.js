@@ -18,7 +18,7 @@ function LoginForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     try{
-      await Axios.post('http://localhost:3000/login', {username, password}).then((data)=>{
+      await Axios.post('http://localhost:3000/login', {username, password}, {withCredentials: true}).then((data)=>{
         if(data.data.success){
           localStorage.setItem("authToken", data.data.token);
           localStorage.setItem("username", data.data.username);
@@ -30,7 +30,6 @@ function LoginForm() {
           srcDispatch({type:"flashMessage", value:"Login error, pelase try again"});
         }
       })
-
     }
     catch(e){
       srcDispatch({type:"flashMessage", value:"Login error, pelase try again"});
