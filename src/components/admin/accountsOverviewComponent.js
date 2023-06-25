@@ -6,37 +6,46 @@ import StateContext from "../../StateContext";
 import DispatchContext from "../../DispatchContext";
 import Axios from "axios";
 
+import CreateGroup from "./createGroupComponent";
+
 function AccountsOverview() {
 
     const [users, setUsers] = useState([]);
+    const [groups, setGroups] = useState([]);
 
     //context
     const srcState = useContext(StateContext);
     const srcDispatch = useContext(DispatchContext);
-
+    const navigate = useNavigate();
+    
     async function getAllUsers(){
+      //if user is not admin redirect to home, else continue 
+      if(srcState.group != "admin"){
+        srcDispatch({type:"flashMessage", value:"Access denied"});
+        return navigate("/");
+      }
+
         try{
             const res = await Axios.post('http://localhost:3000/allusers', {authTokenC:localStorage.getItem('authToken')}, {withCredentials: true})
             if(res.data.success){
                 setUsers(res.data.users);
+                setGroups(res.data.groups);
             }
         }
         catch(e){
-            console.log(e);
             srcDispatch({type:"flashMessage", value:"Error in getting users"});
         }
     }
     
-
-
     useEffect(()=>{
-        getAllUsers();
+      getAllUsers();
 
     }, [])
     return (
       <>
-        <div>All users</div>
-
+        <div className="m-3 text-lg font-black">All users</div>
+        <CreateGroup />
+        
         <div className="flex flex-col">
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
@@ -67,7 +76,9 @@ function AccountsOverview() {
                         <td  className="whitespace-nowrap px-6 py-4 font-medium">{user.username}</td>
                         <td  className="whitespace-nowrap px-6 py-4">{user.email}</td>
                         <td  className="whitespace-nowrap px-6 py-4">{user.status == 1 ? `active` : `disabled`}</td>
-                        <td  className="whitespace-nowrap px-6 py-4">{user.fk_groupName ? user.fk_groupName : "NULL"}</td>
+                        <td  className="whitespace-nowrap px-6 py-4">{groups.map((group)=>(
+                          user.username === group.fk_username ? group.fk_groupName + " " : ""
+                        ))}</td>
                         <td  className="whitespace-nowrap px-6 py-4"><Link to={"/admin/user/profile"} state={{ username: user.username }}>Edit user</Link></td>
                        </tr>
                     ))}

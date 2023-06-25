@@ -19,6 +19,12 @@ function MyProfile() {
     const navigate = useNavigate();
 
     async function getProfile(){
+        //If user is not login redirect user to login page
+        if(!srcState.logIn){
+            srcDispatch({type:"flashMessage", value:"Please login.."})
+            navigate("/login");
+        }
+
         try{
             const res = await Axios.post('http://localhost:3000/profile', {authTokenC:localStorage.getItem('authToken')}, {withCredentials:true});
             if(res.data.success){
@@ -34,8 +40,7 @@ function MyProfile() {
     async function updateProfile(e){
         e.preventDefault();
         try{
-            const res = await Axios.post('http://localhost:3000/update/user', {username, password, oldPassword, email, authTokenC:localStorage.getItem('authToken')});
-            console.log(res.data);
+            const res = await Axios.post('http://localhost:3000/update/user', {username, password, oldPassword, email},{withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
                 console.log("success");

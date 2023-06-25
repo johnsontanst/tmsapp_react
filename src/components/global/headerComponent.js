@@ -50,12 +50,10 @@ function Header() {
         <ul className="nav-links">
 
           <div className="menu">
-            <li>
-              {localStorage.getItem('group') === "admin" ? <Link to="/allusers">User management page</Link> : ""}
-            </li>
-            <li>
-              {srcContext.logIn ? <Link to="/profile">Profile</Link> : ""}
-            </li>
+            {localStorage.getItem('group') === "admin" ? <li><Link to="/allusers">User management page</Link></li> : ""}
+
+            {srcContext.logIn ? <li><Link to="/profile">Profile</Link></li> : ""}
+
 
             <li>
               {srcContext.logIn ? <button onClick={logoutFunc}>Logout</button> : <Link to="/login">Login</Link>}

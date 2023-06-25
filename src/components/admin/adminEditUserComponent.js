@@ -67,9 +67,14 @@ function AdminEditUser() {
     }
 
     async function updateProfile(e){
+        //if user is not admin redirect to home, else continue 
+        if(srcState.group != "admin"){
+            return navigate("/");
+            }
+
         e.preventDefault();
         try{
-            const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email});
+            const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email}, {withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
                 return navigate("/allusers");
@@ -81,6 +86,11 @@ function AdminEditUser() {
     }
 
     useEffect(()=>{
+        if(srcState.group != "admin"){
+            srcDispatch({type:"flashMessage", value:"Access denied"});
+            const navigate = useNavigate();
+            navigate("/");
+          }
         getProfile();
     }, [])
 

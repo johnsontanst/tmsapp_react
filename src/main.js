@@ -12,6 +12,7 @@ import LoginForm from "./components/login/loginComponent";
 import FlashMessage from "./components/global/flashMessageComponent";
 import AccountsOverview from "./components/admin/accountsOverviewComponent";
 import AdminEditUser from "./components/admin/adminEditUserComponent";
+import CreateAccount from "./components/admin/createAccountComponent";
 
 //Tailwindcss
 import './main.css';
@@ -44,6 +45,9 @@ function MainComponent(){
             case "flashMessage":                
                 draft.flashMessage.push(action.value);
                 return
+            case "removeFlashMessage":
+                draft.flashMessage = []
+                return
         }
     }
 
@@ -52,8 +56,7 @@ function MainComponent(){
 
     //useEffect
     useEffect(()=>{
-        const cook = document.cookie.split(';');
-        console.log(cook);
+
     }, [])
 
     return (
@@ -61,13 +64,16 @@ function MainComponent(){
             <DispatchContext.Provider value={dispatch}>
                 <BrowserRouter >
                     <Header />
-                    <FlashMessage messages={state.flashMessage} />
+                    {state.flashMessage.length != 0 ? state.flashMessage.map((alert, index)=>(
+                        <FlashMessage messages={alert} index={index} />
+                    )) : null}
                     <Routes>
                         <Route path="/" element={<GlobalLandingPage />} />
                         <Route path="/login" element={<LoginForm />}/>
                         <Route path="/profile" element={<MyProfile />}/>
                         <Route path="/allusers" element={<AccountsOverview />} />
                         <Route path="/admin/user/profile" element={<AdminEditUser/>} />
+                        <Route path="/register" element={<CreateAccount />} />
                     </Routes>
                     <Footer />
                 </BrowserRouter>
