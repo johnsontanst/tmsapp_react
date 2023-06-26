@@ -50,7 +50,19 @@ function CreateGroup() {
 
     //useEffect
     useEffect(()=>{
-        getAllGroups();
+      const getUserInfo = async()=>{
+        const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+        if(res.data.success){
+            srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+            if(!await res.data.groups.includes("admin")){
+              return navigate("/")
+            }
+            else {
+              getAllGroups();
+            }
+        }
+      }
+      getUserInfo();
     }, [])
 
   return (

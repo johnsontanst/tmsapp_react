@@ -19,25 +19,35 @@ function AccountsOverview() {
     const navigate = useNavigate();
     
     async function getAllUsers(){
-      //if user is not admin redirect to home, else continue 
-      
-
         try{
             const res = await Axios.post('http://localhost:3000/allusers', {authTokenC:localStorage.getItem('authToken')}, {withCredentials: true})
             if(res.data.success){
-              console.log(res.data);
                 setUsers(res.data.users);
                 setGroups(res.data.groups);
             }
         }
-        catch(e){
-            srcDispatch({type:"flashMessage", value:"Error in getting users"});
+        catch(err){
+          console.log(err);
+          srcDispatch({type:"flashMessage", value:"Not"});
         }
     }
     
     useEffect(()=>{
-      getAllUsers();
+      const getUserInfo = async()=>{
+          const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+          if(res.data.success){
+              srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+              if(!await res.data.groups.includes("admin")){
+                return navigate("/")
+              }
+              else {
+                getAllUsers();
+              }
+          }
+      }
+      getUserInfo();
     }, [])
+
     return (
       <>
         <div className="m-3 text-lg font-black">All users</div>

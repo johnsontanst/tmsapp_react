@@ -33,6 +33,7 @@ function MyProfile() {
             }
         }
         catch(e){
+            console.log(e);
             srcDispatch({type:"flashMessage", value:"Error in getting profile"});
         }
     }
@@ -48,12 +49,35 @@ function MyProfile() {
             }
         }
         catch(e){
-            srcDispatch({type:"flashMessage", value:"Error in getting profile"});
+            console.log(e.response.data.message)
+            if(e.response.data.message === "invalid password verification"){
+                srcDispatch({type:"flashMessage", value:"Password verification failed, please try again"});
+            }
+            else if(e.response.data.message === "invalid email"){
+                srcDispatch({type:"flashMessage", value:"Invalid email"});
+            }
+            else if(e.response.data.message === "invalid new password"){
+                srcDispatch({type:"flashMessage", value:"New password is invalid"});
+            }
+            else{
+                srcDispatch({type:"flashMessage", value:"Unauthorized"});
+            }
         }
     }
 
     useEffect(()=>{
-        getProfile();
+        const getUserInfo = async()=>{
+            const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+            if(res.data.success){
+                srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+                getProfile();
+            }
+            else{
+                srcDispatch({type:"flashMessage", value:"Please login.."});
+                navigate("/login");
+            }
+        }
+        getUserInfo();
     }, [])
 
     return ( 

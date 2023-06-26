@@ -43,9 +43,9 @@ function MainComponent(){
             case"login":
                 draft.logIn = true;
                 draft.username = action.value.username
-                console.log(action.value.groups.includes("admin"))
-                if(action.value.groups.includes("admin")) draft.isAdmin = true
-                draft.group.concat(action.value.groups)
+                draft.isAdmin = action.admin
+                console.log(draft.isAdmin);
+                draft.group = action.value.groups
                 return
             case"logout":
                 draft.logIn = false;
@@ -72,8 +72,7 @@ function MainComponent(){
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
-                console.log(res.data.groups.includes("admin"))
-                dispatch({type:"login", value:res.data, admin:await res.data.groups.includes("admin")});
+                dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
             }
         }
         getUserInfo();

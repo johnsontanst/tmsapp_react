@@ -20,7 +20,6 @@ function LoginForm() {
     try{
       await Axios.post('http://localhost:3000/login', {username, password}, {withCredentials: true}).then((data)=>{
         if(data.data.success){
-          console.log(data.data.groups.includes("admin"))
           srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin")});
           return navigate("/");
         }
@@ -45,6 +44,17 @@ function LoginForm() {
     }
   }
 
+  //useEffect()
+  useEffect(()=>{
+    const getUserInfo = async()=>{
+      const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+      if(res.data.success){
+          srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+          navigate("/");
+      }
+    }
+    getUserInfo();
+  },[])
   return (
     <>
 
