@@ -74,7 +74,7 @@ function AdminEditUser() {
 
         e.preventDefault();
         try{
-            const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email}, {withCredentials: true});
+            const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email, status}, {withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
                 return navigate("/allusers");

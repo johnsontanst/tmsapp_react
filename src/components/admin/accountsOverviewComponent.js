@@ -20,14 +20,12 @@ function AccountsOverview() {
     
     async function getAllUsers(){
       //if user is not admin redirect to home, else continue 
-      if(srcState.group != "admin"){
-        srcDispatch({type:"flashMessage", value:"Access denied"});
-        return navigate("/");
-      }
+      
 
         try{
             const res = await Axios.post('http://localhost:3000/allusers', {authTokenC:localStorage.getItem('authToken')}, {withCredentials: true})
             if(res.data.success){
+              console.log(res.data);
                 setUsers(res.data.users);
                 setGroups(res.data.groups);
             }
@@ -39,7 +37,6 @@ function AccountsOverview() {
     
     useEffect(()=>{
       getAllUsers();
-
     }, [])
     return (
       <>
@@ -89,6 +86,10 @@ function AccountsOverview() {
             </div>
           </div>
         </div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
 
       </>
     );

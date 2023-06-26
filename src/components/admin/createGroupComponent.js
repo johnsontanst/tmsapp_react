@@ -35,10 +35,6 @@ function CreateGroup() {
 
     //Get all groups
     async function getAllGroups(){
-        //if user is not admin redirect to home, else continue 
-        if(srcState.group != "admin"){
-          return navigate("/");
-        }
         try{
             const res = await Axios.post("http://localhost:3000/allgroups", {}, {withCredentials:true});
             if(res.data.success){

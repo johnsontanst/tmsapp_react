@@ -3,6 +3,8 @@ import ReactDom from "react-dom";
 import ReactDomClient from "react-dom/client";
 import { BrowserRouter, Route, Routes, Redirect } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
+import Axios from "axios";
+
 
 //components 
 import Footer from "./components/global/footerComponent";
@@ -28,25 +30,36 @@ function MainComponent(){
 
     //initState
     const initialState ={
-        logIn: Boolean(localStorage.getItem('authToken')),
+        logIn: false,
         flashMessage : [],
-        username: localStorage.getItem('username'),
-        group: localStorage.getItem('group')
+        username: "nil",
+        group: [],
+        isAdmin : false
     }
+
 
     function mainReducer(draft, action){
         switch(action.type){
             case"login":
                 draft.logIn = true;
+                draft.username = action.value.username
+                console.log(action.value.groups.includes("admin"))
+                if(action.value.groups.includes("admin")) draft.isAdmin = true
+                draft.group.concat(action.value.groups)
                 return
             case"logout":
                 draft.logIn = false;
+                draft.isAdmin = false;
                 return
             case "flashMessage":                
                 draft.flashMessage.push(action.value);
                 return
             case "removeFlashMessage":
                 draft.flashMessage = []
+                return
+            case "toogleAdmin":
+                if(draft.isAdmin == true) draft.isAdmin = false
+                else draft.isAdmin = true
                 return
         }
     }
@@ -56,7 +69,14 @@ function MainComponent(){
 
     //useEffect
     useEffect(()=>{
-
+        const getUserInfo = async()=>{
+            const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+            if(res.data.success){
+                console.log(res.data.groups.includes("admin"))
+                dispatch({type:"login", value:res.data, admin:await res.data.groups.includes("admin")});
+            }
+        }
+        getUserInfo();
     }, [])
 
     return (
@@ -71,7 +91,7 @@ function MainComponent(){
                         <Route path="/" element={<GlobalLandingPage />} />
                         <Route path="/login" element={<LoginForm />}/>
                         <Route path="/profile" element={<MyProfile />}/>
-                        <Route path="/allusers" element={<AccountsOverview />} />
+                        <Route path="/user-management" element={<AccountsOverview />} />
                         <Route path="/admin/user/profile" element={<AdminEditUser/>} />
                         <Route path="/register" element={<CreateAccount />} />
                     </Routes>

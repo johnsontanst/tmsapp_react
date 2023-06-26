@@ -58,23 +58,30 @@ function MyProfile() {
 
     return ( 
         <>
-            <div>My Profile</div>
-            <form onSubmit={updateProfile}>
-                <label htmlFor="username" className="block">Username</label>
-                <input className="rounded shadow border bg-stone-500 opacity-75" type="text" value={username} readOnly name="username" id="username"/>
+            <div className="grid grid-cols-3 grid-row-2">
+                <div></div>
+                <div className="my-5">My Profile</div>
+                <div></div>
+                <div></div>
+                <div>
+                    <form onSubmit={updateProfile}>
+                        <label htmlFor="username" className="block">Username</label>
+                        <input className="rounded shadow border bg-stone-500 opacity-75" type="text" value={username} readOnly name="username" id="username"/>
 
-                <label htmlFor="email" className="block mt-5">Email</label>
-                <input className="rounded shadow border" type="text" value={email} onChange={(e)=>setEmail(e.target.value)} name="email" id="email"/>
-                
-                <label htmlFor="password" className="block mt-5">New password</label>
-                <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password"/>
+                        <label htmlFor="email" className="block mt-5">Email</label>
+                        <input className="rounded shadow border" type="text" value={email} onChange={(e)=>setEmail(e.target.value)} name="email" id="email"/>
+                        
+                        <label htmlFor="password" className="block mt-5">New password</label>
+                        <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password"/>
 
-                <label htmlFor="oldPassword" className="block mt-5">Enter old password for verification</label>
-                <input className="rounded shadow border" type="password" onChange={(e)=>setOldPassword(e.target.value)} name="oldPassword"/>
-                <br></br>
-                <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/">Cancel</Link>
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5">Submit</button>
-            </form>
+                        <label htmlFor="oldPassword" className="block mt-5">Enter old password for verification</label>
+                        <input className="rounded shadow border" type="password" onChange={(e)=>setOldPassword(e.target.value)} name="oldPassword"/>
+                        <br></br>
+                        <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/">Cancel</Link>
+                        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5">Submit</button>
+                    </form>
+                </div>
+            </div>
         </>
      );
 }

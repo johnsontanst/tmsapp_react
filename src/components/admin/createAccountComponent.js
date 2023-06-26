@@ -34,8 +34,9 @@ function CreateAccount() {
 
     //Check admin permission
     function checkUserAdmin(){
-        if(srcState.group != "admin"){
-            navigate("/");
+        if(srcState.group != "admin" || srcState.logIn == false){
+          srcDispatch({type:"flashMessage", value:"Not authenticated/authorized"})
+          navigate("/");
         }
     }
 

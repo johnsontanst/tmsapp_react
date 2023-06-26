@@ -33,12 +33,6 @@ function Header() {
     //Set useState logIn to false
     srcDispatch({type:"logout"});
 
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-
     return navigate('/login');
   }
 
@@ -50,7 +44,7 @@ function Header() {
         <ul className="nav-links">
 
           <div className="menu">
-            {localStorage.getItem('group') === "admin" ? <li><Link to="/allusers">User management page</Link></li> : ""}
+            {srcContext.isAdmin ? <li><Link to="/user-management">User management page</Link></li> : ""}
 
             {srcContext.logIn ? <li><Link to="/profile">Profile</Link></li> : ""}
 
