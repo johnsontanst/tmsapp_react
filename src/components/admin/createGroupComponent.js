@@ -61,6 +61,9 @@ function CreateGroup() {
               getAllGroups();
             }
         }
+        else{
+          navigate("/");
+        }
       }
       getUserInfo();
     }, [])

@@ -19,12 +19,6 @@ function MyProfile() {
     const navigate = useNavigate();
 
     async function getProfile(){
-        //If user is not login redirect user to login page
-        if(!srcState.logIn){
-            srcDispatch({type:"flashMessage", value:"Please login.."})
-            navigate("/login");
-        }
-
         try{
             const res = await Axios.post('http://localhost:3000/profile', {authTokenC:localStorage.getItem('authToken')}, {withCredentials:true});
             if(res.data.success){
@@ -68,6 +62,7 @@ function MyProfile() {
     useEffect(()=>{
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+            console.log(res.data.success)
             if(res.data.success){
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                 getProfile();

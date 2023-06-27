@@ -44,6 +44,9 @@ function AccountsOverview() {
                 getAllUsers();
               }
           }
+          else{
+            return navigate("/")
+          }
       }
       getUserInfo();
     }, [])

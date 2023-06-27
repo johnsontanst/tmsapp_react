@@ -39,6 +39,7 @@ function AdminEditUser() {
         try{
             const res = await Axios.post('http://localhost:3000/admin/user/profile', {username}, {withCredentials: true});
             if(res.data.success){
+                console.log(res.data)
                 setUsername(res.data.username);
                 setEmail(res.data.email);
                 setStatus(res.data.status);
@@ -68,7 +69,7 @@ function AdminEditUser() {
 
     async function updateProfile(e){
         //if user is not admin redirect to home, else continue 
-        if(srcState.group != "admin"){
+        if(!srcState.isAdmin){
             return navigate("/");
             }
 
@@ -77,7 +78,7 @@ function AdminEditUser() {
             const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email, status}, {withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
-                return navigate("/allusers");
+                return navigate("/user-management");
             }
         }
         catch(e){
@@ -86,45 +87,60 @@ function AdminEditUser() {
     }
 
     useEffect(()=>{
-        if(srcState.group != "admin"){
-            srcDispatch({type:"flashMessage", value:"Access denied"});
-            const navigate = useNavigate();
-            navigate("/");
-          }
-        getProfile();
+        const getUserInfo = async()=>{
+            const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+            if(res.data.success){
+                srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+                if(!await res.data.groups.includes("admin")){
+                  return navigate("/")
+                }
+                else{
+                    getProfile();
+                }
+            }
+        }
+        getUserInfo();
     }, [])
 
     return ( 
         <>
+        <div className="grid grid-cols-3 grid-row-2">
+            <div></div>
             <div>{username}'s profile</div>
-            <form onSubmit={updateProfile}>
-                <label htmlFor="username" className="block">Username</label>
-                <input className="rounded shadow border bg-stone-500 opacity-75" type="text" value={username} readOnly name="username" id="username"/>
+            <div></div>
+            <div></div>
+            <div>
+                <form onSubmit={updateProfile}>
+                    <label htmlFor="username" className="block">Username</label>
+                    <input className="rounded shadow border bg-stone-500 opacity-75" type="text" value={username} readOnly name="username" id="username"/>
 
-                <label htmlFor="email" className="block mt-5">Email</label>
-                <input className="rounded shadow border" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} name="email" id="email"/>
-                
-                <label htmlFor="password" className="block mt-5">New password</label>
-                <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password"/>
-
-                <label htmlFor="status" className="block mt-5">Account Status</label>
-                <select value={status} onChange={(e)=>changeStatus(e.target.value)} name="status">
-                    <option value="1">Active</option>
-                    <option value="0">Disable</option>
-                </select>
-
-                <label htmlFor="groups" className="block mt-5">Groups</label>
-                <select multiple={true} value={groups} onChange={handleGroupChange} name="groups">
-                    {allgroups.map((group)=>(
-                        <option value={group}>{group}</option>
-                    ))}
+                    <label htmlFor="email" className="block mt-5">Email</label>
+                    <input className="rounded shadow border" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} name="email" id="email"/>
                     
-                </select>
+                    <label htmlFor="password" className="block mt-5">New password</label>
+                    <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password"/>
 
-                <br></br>
-                <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/allusers">Cancel</Link>
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5">Submit</button>
-            </form>
+                    <label htmlFor="status" className="block mt-5">Account Status</label>
+                    <select value={status} onChange={(e)=>changeStatus(e.target.value)} name="status">
+                        <option value="1">Active</option>
+                        <option value="0">Disable</option>
+                    </select>
+
+                    <label htmlFor="groups" className="block mt-5">Groups</label>
+                    <select multiple={true} value={groups} onChange={handleGroupChange} name="groups">
+                        {allgroups.map((group)=>(
+                            <option value={group}>{group}</option>
+                        ))}
+                        
+                    </select>
+
+                    <br></br>
+                    <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/allusers">Cancel</Link>
+                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5">Submit</button>
+                </form>
+            </div>
+            <div></div>
+        </div>
 
         </>
      );

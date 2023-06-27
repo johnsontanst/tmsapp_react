@@ -11,6 +11,8 @@ function CreateAccount() {
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
     const [email, setEmail] = useState();
+    const [allGroups, setAllGroups] = useState([]);
+    const [groups, setGroups] = useState([]);
     const navigate = useNavigate();
 
     //Contexts
@@ -21,24 +23,55 @@ function CreateAccount() {
     async function handleSubmit(e){
         e.preventDefault();
         try{
-            const res = await Axios.post("http://localhost:3000/register", {username, password, email}, {withCredentials:true});
+            const res = await Axios.post("http://localhost:3000/register", {username, password, email, groups}, {withCredentials:true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"user registered"});
-                navigate("/allusers");
+                //Reset useState fields and reset input fields
+                setUsername(" ");
+                setPassword(" ");
+                setEmail(" ");
+                setGroups([]);
+                document.getElementById("floating_username").value =" ";
+                document.getElementById("floating_email").value =" ";
+                document.getElementById("floating_password").value =" ";
+                document.getElementById("groups_multiple").value =" ";
+
+                navigate("/register");
             }
         }
         catch(e){
-            srcDispatch({type:"flashMessage", value:"Error in registering user"});
+          console.log(e.response.data.message)
+          if(e.response.data.message === "Invalid password input"){
+            srcDispatch({type:"flashMessage", value:"Invalid password, must contains 8 to 10 chars comprise of alphabets , numbers, and special character  "});
+          }
+          else if(e.response.data.message === "Invalid email input"){
+            srcDispatch({type:"flashMessage", value:"Invalid email"});
+          }
+          else if(e.response.data.message === "Invalid username input"){
+            srcDispatch({type:"flashMessage", value:"Invalid username"});
+          }
+          else{
+            srcDispatch({type:"flashMessage", value:"Username taken, please try agian..."});
+          }
         }
     }
 
-    //Check admin permission
-    function checkUserAdmin(){
-        if(srcState.group != "admin" || srcState.logIn == false){
-          srcDispatch({type:"flashMessage", value:"Not authenticated/authorized"})
-          navigate("/");
+    //Get all groups
+    async function getAllgroups(){
+      const res = await Axios.post("http://localhost:3000/allgroups",{},{withCredentials:true});
+        if(res.data.success){
+          setAllGroups(res.data.groups);
         }
     }
+
+    //update selected group onChange
+    function handleGroupChange(tt){
+      const updatedOptions = [...tt.target.options].filter(option => option.selected)
+      .map(x => x.value);
+      console.log(updatedOptions);
+      
+      setGroups(updatedOptions);
+  }
 
 
     //useEffect
@@ -50,14 +83,14 @@ function CreateAccount() {
             if(!await res.data.groups.includes("admin")){
               return navigate("/")
             }
-            else {
-              checkUserAdmin();
+            else{
+              getAllgroups();
             }
         }
       }
       getUserInfo();
         
-    });
+    }, []);
 
 
   return (
@@ -114,6 +147,14 @@ function CreateAccount() {
           >
             Password
           </label>
+        </div>
+        <div className="relative z-0 w-full mb-6 group">
+          <label for="groups_multiple" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select group/s</label>
+          <select multiple onChange={handleGroupChange} id="groups_multiple" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            {allGroups.map((group, index)=>(
+              <option key={index} value={group.groupName}>{group.groupName}</option>
+            ))}
+          </select>
         </div>
 
         <Link className="text-white bg-stone-500 hover:bg-stone-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>

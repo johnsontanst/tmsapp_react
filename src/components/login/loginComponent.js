@@ -20,6 +20,7 @@ function LoginForm() {
     try{
       await Axios.post('http://localhost:3000/login', {username, password}, {withCredentials: true}).then((data)=>{
         if(data.data.success){
+          console.log(data.data);
           srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin")});
           return navigate("/");
         }
@@ -28,14 +29,11 @@ function LoginForm() {
         }
       }).catch((err)=>{
         console.log(err.response.data.message);
-        if(err.response.data.message === "Invalid password"){
-          srcDispatch({type:"flashMessage", value:"Invalid password"});
-        }
-        else if(err.response.data.message === "Account suspended, please contact the admin"){
+       if(err.response.data.message === "Account suspended, please contact the admin"){
           srcDispatch({type:"flashMessage", value:"Account suspended, please contact the admin"});
         }
-        else if(err.response.data.message === "invalid creds"){
-          srcDispatch({type:"flashMessage", value:"Invalid username"});
+        else{
+          srcDispatch({type:"flashMessage", value:"Invalid credentials, please try again.."});
         }
       })
     }

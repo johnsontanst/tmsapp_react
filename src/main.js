@@ -4,6 +4,7 @@ import ReactDomClient from "react-dom/client";
 import { BrowserRouter, Route, Routes, Redirect } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 import Axios from "axios";
+import {useNavigate} from "react-router-dom"
 
 
 //components 
@@ -44,7 +45,6 @@ function MainComponent(){
                 draft.logIn = true;
                 draft.username = action.value.username
                 draft.isAdmin = action.admin
-                console.log(draft.isAdmin);
                 draft.group = action.value.groups
                 return
             case"logout":
