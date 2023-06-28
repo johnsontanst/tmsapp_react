@@ -23,18 +23,18 @@ function CreateAccount() {
     async function handleSubmit(e){
         e.preventDefault();
         try{
-            const res = await Axios.post("http://localhost:3000/register", {username, password, email, groups}, {withCredentials:true});
+            const res = await Axios.post("http://localhost:3000/register", {username, password, email, groups, un:srcState.username, gn:"admin"}, {withCredentials:true});
             if(res.data.success){
-                srcDispatch({type:"flashMessage", value:"user registered"});
+                srcDispatch({type:"flashMessage", value:"account created"});
                 //Reset useState fields and reset input fields
-                setUsername(" ");
-                setPassword(" ");
-                setEmail(" ");
+                setUsername("");
+                setPassword("");
+                setEmail("");
                 setGroups([]);
-                document.getElementById("floating_username").value =" ";
-                document.getElementById("floating_email").value =" ";
-                document.getElementById("floating_password").value =" ";
-                document.getElementById("groups_multiple").value =" ";
+                document.getElementById("floating_username").value ="";
+                document.getElementById("floating_email").value ="";
+                document.getElementById("floating_password").value ="";
+                document.getElementById("groups_multiple").value ="";
 
                 navigate("/register");
             }
@@ -51,14 +51,14 @@ function CreateAccount() {
             srcDispatch({type:"flashMessage", value:"Invalid username"});
           }
           else{
-            srcDispatch({type:"flashMessage", value:"Username taken, please try agian..."});
+            srcDispatch({type:"flashMessage", value:"Username taken, please try again..."});
           }
         }
     }
 
     //Get all groups
     async function getAllgroups(){
-      const res = await Axios.post("http://localhost:3000/allgroups",{},{withCredentials:true});
+      const res = await Axios.post("http://localhost:3000/allgroups",{un:srcState.username, gn:"admin"},{withCredentials:true});
         if(res.data.success){
           setAllGroups(res.data.groups);
         }
@@ -95,7 +95,7 @@ function CreateAccount() {
 
   return (
     <>
-        <h1 className="p-5">Register account (Admin only)</h1>
+        <h1 className="p-5">Create account (Admin only)</h1>
       <form className="p-5" onSubmit={handleSubmit}>
         <div className="relative z-0 w-full mb-6 group">
           <input
@@ -122,7 +122,6 @@ function CreateAccount() {
             className="block py-2.5 px-0 w-full text-sm text-stone-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-stone-900 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             onChange={(e)=>setEmail(e.target.value)}
-            required
           />
           <label
             htmlFor="floating_email"
@@ -157,7 +156,7 @@ function CreateAccount() {
           </select>
         </div>
 
-        <Link className="text-white bg-stone-500 hover:bg-stone-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
+        <Link to="/user-management" className="text-white bg-stone-500 hover:bg-stone-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
        
         <button
           type="submit"

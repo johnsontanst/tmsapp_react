@@ -37,9 +37,10 @@ function AdminEditUser() {
 
     async function getProfile(){
         try{
-            const res = await Axios.post('http://localhost:3000/admin/user/profile', {username}, {withCredentials: true});
+            console.log(username);
+            const res = await Axios.post('http://localhost:3000/admin/user/profile', {username, un:srcState.username, gn:"admin"}, {withCredentials: true});
+            console.log(res.data);
             if(res.data.success){
-                console.log(res.data)
                 setUsername(res.data.username);
                 setEmail(res.data.email);
                 setStatus(res.data.status);
@@ -60,9 +61,15 @@ function AdminEditUser() {
                     }
                     setallgroups(tempGroups);
                 }
+
+                //disable active/disable option if user is admin
+                if(res.data.username === "admin"){
+                    document.querySelector('select[id="selectstatus"] option[value="0"]').disabled = true;
+                }
             }
         }
         catch(e){
+            console.log(e)
             srcDispatch({type:"flashMessage", value:"Error in getting user profile"});
         }
     }
@@ -72,10 +79,10 @@ function AdminEditUser() {
         if(!srcState.isAdmin){
             return navigate("/");
             }
-
+        
         e.preventDefault();
         try{
-            const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email, status}, {withCredentials: true});
+            const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email, status, un:srcState.username, gn:"admin"}, {withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
                 return navigate("/user-management");
@@ -121,7 +128,7 @@ function AdminEditUser() {
                     <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password"/>
 
                     <label htmlFor="status" className="block mt-5">Account Status</label>
-                    <select value={status} onChange={(e)=>changeStatus(e.target.value)} name="status">
+                    <select value={status} onChange={(e)=>changeStatus(e.target.value)} name="status" id="selectstatus">
                         <option value="1">Active</option>
                         <option value="0">Disable</option>
                     </select>
@@ -135,7 +142,7 @@ function AdminEditUser() {
                     </select>
 
                     <br></br>
-                    <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/allusers">Cancel</Link>
+                    <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/user-management">Cancel</Link>
                     <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5">Submit</button>
                 </form>
             </div>

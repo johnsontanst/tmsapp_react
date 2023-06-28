@@ -20,7 +20,6 @@ function LoginForm() {
     try{
       await Axios.post('http://localhost:3000/login', {username, password}, {withCredentials: true}).then((data)=>{
         if(data.data.success){
-          console.log(data.data);
           srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin")});
           return navigate("/");
         }

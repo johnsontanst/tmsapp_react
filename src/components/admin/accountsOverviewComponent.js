@@ -20,7 +20,7 @@ function AccountsOverview() {
     
     async function getAllUsers(){
         try{
-            const res = await Axios.post('http://localhost:3000/allusers', {authTokenC:localStorage.getItem('authToken')}, {withCredentials: true})
+            const res = await Axios.post('http://localhost:3000/allusers', {un:srcState.username, gn:"admin"}, {withCredentials: true})
             if(res.data.success){
                 setUsers(res.data.users);
                 setGroups(res.data.groups);
@@ -86,8 +86,8 @@ function AccountsOverview() {
                         <td  className="whitespace-nowrap px-6 py-4 font-medium">{user.username}</td>
                         <td  className="whitespace-nowrap px-6 py-4">{user.email}</td>
                         <td  className="whitespace-nowrap px-6 py-4">{user.status == 1 ? `active` : `disabled`}</td>
-                        <td  className="whitespace-nowrap px-6 py-4">{groups.map((group)=>(
-                          user.username === group.fk_username ? group.fk_groupName + " " : ""
+                        <td  className="whitespace-nowrap px-6 py-4">{groups.map((group, index)=>(
+                          user.username === group.fk_username ? <span key={index} class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{group.fk_groupName}</span> : ""
                         ))}</td>
                         <td  className="whitespace-nowrap px-6 py-4"><Link to={"/admin/user/profile"} state={{ username: user.username }}>Edit user</Link></td>
                        </tr>

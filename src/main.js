@@ -83,17 +83,19 @@ function MainComponent(){
             <DispatchContext.Provider value={dispatch}>
                 <BrowserRouter >
                     <Header />
+                    <div className="min-h-screen">
+                        <Routes>
+                            <Route path="/" element={<GlobalLandingPage />} />
+                            <Route path="/login" element={<LoginForm />}/>
+                            <Route path="/profile" element={<MyProfile />}/>
+                            <Route path="/user-management" element={<AccountsOverview />} />
+                            <Route path="/admin/user/profile" element={<AdminEditUser/>} />
+                            <Route path="/register" element={<CreateAccount />} />
+                        </Routes>
+                    </div>
                     {state.flashMessage.length != 0 ? state.flashMessage.map((alert, index)=>(
                         <FlashMessage messages={alert} index={index} />
                     )) : null}
-                    <Routes>
-                        <Route path="/" element={<GlobalLandingPage />} />
-                        <Route path="/login" element={<LoginForm />}/>
-                        <Route path="/profile" element={<MyProfile />}/>
-                        <Route path="/user-management" element={<AccountsOverview />} />
-                        <Route path="/admin/user/profile" element={<AdminEditUser/>} />
-                        <Route path="/register" element={<CreateAccount />} />
-                    </Routes>
                     <Footer />
                 </BrowserRouter>
             </DispatchContext.Provider>

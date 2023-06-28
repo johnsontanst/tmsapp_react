@@ -9,6 +9,7 @@ import DispatchContext from "../../DispatchContext";
 function MyProfile() {
     const [username, setUsername] = useState();
     const [email, setEmail] = useState();
+    const [groups, setGroups] = useState([]);
     const [password, setPassword] = useState();
     const [oldPassword, setOldPassword] = useState();
 
@@ -24,6 +25,7 @@ function MyProfile() {
             if(res.data.success){
                 setUsername(res.data.username);
                 setEmail(res.data.email);
+                setGroups(res.data.groups);
             }
         }
         catch(e){
@@ -35,15 +37,16 @@ function MyProfile() {
     async function updateProfile(e){
         e.preventDefault();
         try{
+            console.log(email);
             const res = await Axios.post('http://localhost:3000/update/user', {username, password, oldPassword, email},{withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
-                console.log("success");
+                
                 return navigate("/");
             }
         }
         catch(e){
-            console.log(e.response.data.message)
+            console.log(e.response.data.err.code)
             if(e.response.data.message === "invalid password verification"){
                 srcDispatch({type:"flashMessage", value:"Password verification failed, please try again"});
             }
@@ -52,6 +55,9 @@ function MyProfile() {
             }
             else if(e.response.data.message === "invalid new password"){
                 srcDispatch({type:"flashMessage", value:"New password is invalid"});
+            }
+            else if (e.response.data.err.code === "ER_DUP_ENTRY"){
+                srcDispatch({type:"flashMessage", value:"Invalid email"});
             }
             else{
                 srcDispatch({type:"flashMessage", value:"Unauthorized"});
@@ -82,7 +88,7 @@ function MyProfile() {
                 <div className="my-5">My Profile</div>
                 <div></div>
                 <div></div>
-                <div>
+                <div className="flex justify-center">
                     <form onSubmit={updateProfile}>
                         <label htmlFor="username" className="block">Username</label>
                         <input className="rounded shadow border bg-stone-500 opacity-75" type="text" value={username} readOnly name="username" id="username"/>
@@ -95,6 +101,16 @@ function MyProfile() {
 
                         <label htmlFor="oldPassword" className="block mt-5">Enter old password for verification</label>
                         <input className="rounded shadow border" type="password" onChange={(e)=>setOldPassword(e.target.value)} name="oldPassword"/>
+
+
+                        <label htmlFor="oldPassword" className="block mt-5">Group/s:</label>
+                        <div class="mt-2">
+                            {groups.map((g, index)=>(
+                                <span key={index} class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{g.groupName}</span>
+                            ))}
+                            
+                        </div>
+
                         <br></br>
                         <Link className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full mr-5 mt-5" to="/">Cancel</Link>
                         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5">Submit</button>

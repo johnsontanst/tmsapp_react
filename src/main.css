@@ -48,15 +48,8 @@
 /*footer styling start*/
 
 .footer{
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
   outline-style: double;
   outline-color: black;
-  color: black;
-  text-align: center;
-
 }
 
 
