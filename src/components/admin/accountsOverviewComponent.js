@@ -27,29 +27,36 @@ function AccountsOverview() {
             }
         }
         catch(err){
-          console.log(err);
-          srcDispatch({type:"flashMessage", value:"Not"});
+          srcDispatch({type:"flashMessage", value:"Error getting users"});
         }
     }
-    
+
     useEffect(()=>{
       const getUserInfo = async()=>{
+        try{
           const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
           if(res.data.success){
-              srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-              if(!await res.data.groups.includes("admin")){
-                return navigate("/")
-              }
-              else {
-                getAllUsers();
-              }
+            srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+            if(!res.data.groups.includes("admin")){
+              return navigate("/")
+            }
           }
           else{
             return navigate("/")
           }
+        }
+        catch(e){
+          srcDispatch({type:"flashMessage", value:"Error getting users"});
+          return navigate("/")
+        }
       }
+      
       getUserInfo();
     }, [])
+
+    useEffect(()=>{
+      if(srcState.isAdmin) getAllUsers();
+    },[srcState.isAdmin])
 
     return (
       <>
@@ -87,7 +94,7 @@ function AccountsOverview() {
                         <td  className="whitespace-nowrap px-6 py-4">{user.email}</td>
                         <td  className="whitespace-nowrap px-6 py-4">{user.status == 1 ? `active` : `disabled`}</td>
                         <td  className="whitespace-nowrap px-6 py-4">{groups.map((group, index)=>(
-                          user.username === group.fk_username ? <span key={index} class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{group.fk_groupName}</span> : ""
+                          user.username === group.fk_username ? <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{group.fk_groupName}</span> : ""
                         ))}</td>
                         <td  className="whitespace-nowrap px-6 py-4"><Link to={"/admin/user/profile"} state={{ username: user.username }}>Edit user</Link></td>
                        </tr>

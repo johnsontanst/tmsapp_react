@@ -21,6 +21,7 @@ function CreateGroup() {
     //Handle Submit
     async function handleSubmit(e){
       e.preventDefault();
+      console.log(formGroup)
       try{
         const res = await Axios.post("http://localhost:3000/register/group", {groupName:formGroup, un:srcState.username, gn:"admin"}, {withCredentials:true});
         if(res.data.success){
@@ -50,28 +51,13 @@ function CreateGroup() {
 
     //useEffect
     useEffect(()=>{
-      const getUserInfo = async()=>{
-        const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-        if(res.data.success){
-            srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-            if(!await res.data.groups.includes("admin")){
-              return navigate("/")
-            }
-            else {
-              getAllGroups();
-            }
-        }
-        else{
-          navigate("/");
-        }
-      }
-      getUserInfo();
-    }, [])
+      if(srcState.isAdmin) getAllGroups();
+    },[srcState.isAdmin])
 
   return (
     <>
       <div className="grid grid-cols-4 md:grid-col-3">
-        <div><Link to="/register" className="m-3 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Create account</Link></div>
+        <div><Link to="/create/account" className="m-3 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Create account</Link></div>
         <div className="lg:visible"></div>
         <div>
             <span className="text-md block">All groups</span>

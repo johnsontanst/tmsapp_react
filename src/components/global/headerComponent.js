@@ -5,11 +5,13 @@ import Axios from "axios";
 //Import contexts
 import StateContext from "../../StateContext";
 import DispatchContext from "../../DispatchContext";
+import FunctionContext from "../../FunctionContext";
 
 function Header() {
  
   const srcContext = useContext(StateContext);
   const srcDispatch = useContext(DispatchContext);
+  const srcFunction = useContext(FunctionContext);
   const navigate = useNavigate();
 
   //Logout

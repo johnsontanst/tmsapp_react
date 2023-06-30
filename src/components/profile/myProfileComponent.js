@@ -37,7 +37,6 @@ function MyProfile() {
     async function updateProfile(e){
         e.preventDefault();
         try{
-            console.log(email);
             const res = await Axios.post('http://localhost:3000/update/user', {username, password, oldPassword, email},{withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
@@ -46,7 +45,6 @@ function MyProfile() {
             }
         }
         catch(e){
-            console.log(e.response.data.err.code)
             if(e.response.data.message === "invalid password verification"){
                 srcDispatch({type:"flashMessage", value:"Password verification failed, please try again"});
             }

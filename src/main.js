@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import ReactDom from "react-dom";
 import ReactDomClient from "react-dom/client";
-import { BrowserRouter, Route, Routes, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 import Axios from "axios";
 import {useNavigate} from "react-router-dom"
@@ -24,10 +24,12 @@ import './main.css';
 //Contexts
 import StateContext from "./StateContext"
 import DispatchContext from "./DispatchContext"
+import FunctionContext from "./FunctionContext";
 import MyProfile from "./components/profile/myProfileComponent";
 
 
 function MainComponent(){
+    const [logoutRedirect, setLogoutRedirect] = useState(false);
 
     //initState
     const initialState ={
@@ -67,11 +69,35 @@ function MainComponent(){
     //Reducer
     const [state, dispatch] = useImmerReducer(mainReducer, initialState);
 
+    //Logout
+    async function logoutFunc(){
+
+        const logoutResult = await Axios.post("http://localhost:3000/logout", {}, {withCredentials: true});
+        if(logoutResult.data.success){
+        //Clear localstorage
+        localStorage.clear();
+
+        //Set useState logIn to false
+        dispatch({type:"logout"});
+
+        localStorage.removeItem('authToken');
+
+        }
+        //Clear localstorage
+        localStorage.clear();
+
+        //Set useState logIn to false
+        dispatch({type:"logout"});
+
+
+    }
+
     //useEffect
     useEffect(()=>{
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
+                if(res.data.status == 0) logoutFunc();
                 dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
             }
         }
@@ -90,7 +116,7 @@ function MainComponent(){
                             <Route path="/profile" element={<MyProfile />}/>
                             <Route path="/user-management" element={<AccountsOverview />} />
                             <Route path="/admin/user/profile" element={<AdminEditUser/>} />
-                            <Route path="/register" element={<CreateAccount />} />
+                            <Route path="/create/account" element={<CreateAccount />} />
                         </Routes>
                     </div>
                     {state.flashMessage.length != 0 ? state.flashMessage.map((alert, index)=>(

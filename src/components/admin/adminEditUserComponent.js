@@ -9,6 +9,10 @@ import DispatchContext from "../../DispatchContext";
 function AdminEditUser() {
     //Using Link state to parse data by useLocation(react-router-dom)
     const {state} = useLocation();
+    const navigate = useNavigate();
+
+    //return to user-management if state username is empty
+    if(state == null) return navigate("/user-management");
 
     const [username, setUsername] = useState(state.username);
     const [email, setEmail] = useState();
@@ -20,8 +24,6 @@ function AdminEditUser() {
     //context 
     const srcState = useContext(StateContext);
     const srcDispatch = useContext(DispatchContext);
-
-    const navigate = useNavigate();
 
     function changeStatus(s){
         setStatus(s);
@@ -97,13 +99,16 @@ function AdminEditUser() {
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
-                srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+                await srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                 if(!await res.data.groups.includes("admin")){
                   return navigate("/")
                 }
                 else{
                     getProfile();
                 }
+            }
+            else{
+                return navigate("/");
             }
         }
         getUserInfo();
