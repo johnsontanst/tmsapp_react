@@ -66,7 +66,6 @@ function MyProfile() {
     useEffect(()=>{
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-            console.log(res.data.success)
             if(res.data.success){
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                 getProfile();

@@ -41,7 +41,6 @@ function AdminEditUser() {
         try{
             console.log(username);
             const res = await Axios.post('http://localhost:3000/admin/user/profile', {username, un:srcState.username, gn:"admin"}, {withCredentials: true});
-            console.log(res.data);
             if(res.data.success){
                 setUsername(res.data.username);
                 setEmail(res.data.email);
@@ -67,6 +66,12 @@ function AdminEditUser() {
                 //disable active/disable option if user is admin
                 if(res.data.username === "admin"){
                     document.querySelector('select[id="selectstatus"] option[value="0"]').disabled = true;
+                    if(srcState.username != "admin"){
+                        document.getElementById('email').readOnly=true;
+                        document.getElementById('email').className="rounded shadow border bg-stone-500 opacity-75";
+                        document.getElementById('password').readOnly=true;
+                        document.getElementById('password').className="rounded shadow border bg-stone-500 opacity-75";
+                    }
                 }
             }
         }
@@ -81,8 +86,11 @@ function AdminEditUser() {
         if(!srcState.isAdmin){
             return navigate("/");
             }
-        
         e.preventDefault();
+        if(username == "admin" && !groups.includes("admin")){
+            srcDispatch({type:"flashMessage", value:"Unable to remove admin group"});
+            return;
+        }
         try{
             const res = await Axios.post('http://localhost:3000/admin/update/user', {username, password, groups, email, status, un:srcState.username, gn:"admin"}, {withCredentials: true});
             if(res.data.success){
@@ -130,7 +138,7 @@ function AdminEditUser() {
                     <input className="rounded shadow border" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} name="email" id="email"/>
                     
                     <label htmlFor="password" className="block mt-5">New password</label>
-                    <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password"/>
+                    <input className="rounded shadow border" type="password" onChange={(e)=>setPassword(e.target.value)} name="password" id="password"/>
 
                     <label htmlFor="status" className="block mt-5">Account Status</label>
                     <select value={status} onChange={(e)=>changeStatus(e.target.value)} name="status" id="selectstatus">
@@ -139,7 +147,7 @@ function AdminEditUser() {
                     </select>
 
                     <label htmlFor="groups" className="block mt-5">Groups</label>
-                    <select multiple={true} value={groups} onChange={handleGroupChange} name="groups">
+                    <select multiple={true} value={groups} onChange={handleGroupChange} id="groups" name="groups">
                         {allgroups.map((group)=>(
                             <option value={group}>{group}</option>
                         ))}

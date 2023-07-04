@@ -72,7 +72,7 @@ function CreateGroup() {
           <span className="text-md block">Create group</span>
           <form onSubmit={handleSubmit}>
             <label htmlFor="groupName">Group name:</label>
-            <input type="text" name="groupName" onChange={(e) => setFormGroup(e.target.value)} className="px-2 py-1 placeholder-slate-300 text-slate-600 relative bg-white rounded text-sm border-2 mr-2 shadow outline-none focus:outline-none focus:ring"/>
+            <input type="text" name="groupName" maxLength={100} onChange={(e) => setFormGroup(e.target.value)} className="px-2 py-1 placeholder-slate-300 text-slate-600 relative bg-white rounded text-sm border-2 mr-2 shadow outline-none focus:outline-none focus:ring"/>
             <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded-full text-sm">Submit</button>
           </form>
         </div>

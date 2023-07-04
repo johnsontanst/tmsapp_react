@@ -13,6 +13,7 @@ function CreateAccount() {
     const [email, setEmail] = useState();
     const [allGroups, setAllGroups] = useState([]);
     const [groups, setGroups] = useState([]);
+    const[status, setStatus] = useState(1);
     const navigate = useNavigate();
 
     //Contexts
@@ -23,7 +24,7 @@ function CreateAccount() {
     async function handleSubmit(e){
         e.preventDefault();
         try{
-            const res = await Axios.post("http://localhost:3000/register", {username, password, email, groups, un:srcState.username, gn:"admin"}, {withCredentials:true});
+            const res = await Axios.post("http://localhost:3000/register", {username, password, email, groups, un:srcState.username, gn:"admin", status}, {withCredentials:true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"account created"});
                 //Reset useState fields and reset input fields
@@ -31,6 +32,7 @@ function CreateAccount() {
                 setPassword("");
                 setEmail("");
                 setGroups([]);
+                setStatus(1);
                 document.getElementById("floating_username").value ="";
                 document.getElementById("floating_email").value ="";
                 document.getElementById("floating_password").value ="";
@@ -73,7 +75,6 @@ function CreateAccount() {
       setGroups(updatedOptions);
   }
 
-
     //useEffect
     useEffect(()=>{
       const getUserInfo = async()=>{
@@ -94,7 +95,6 @@ function CreateAccount() {
     useEffect(()=>{
       if(srcState.isAdmin) getAllgroups();
     },[srcState.isAdmin])
-
 
   return (
     <>
@@ -149,6 +149,13 @@ function CreateAccount() {
           >
             Password
           </label>
+        </div>
+        <div className="relative z-0 w-full mb-6 group">
+          <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+          <select id="countries" onChange={(e)=>{setStatus(e.target.value)}} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value={1} selected>Active</option>
+            <option value={0}>Disable</option>
+          </select>
         </div>
         <div className="relative z-0 w-full mb-6 group">
           <label for="groups_multiple" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select group/s</label>
