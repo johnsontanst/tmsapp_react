@@ -66,43 +66,46 @@ function EditApp() {
         }
     }
 
+    //Get app
+    async function getApp(){
+        //Axios app
+        const appResult = await Axios.post('http://localhost:3000/get-application', {acronym:state.acronym}, {withCredentials:true})
+
+        //Set app
+        if(appResult.data.success){
+            setAcronym(appResult.data.apps[0].App_Acronym)
+            setDescription(appResult.data.apps[0].App_Description)
+            setRnumber(appResult.data.apps[0].App_Rnumber)
+            setStartDate(appResult.data.apps[0].App_startDate)
+            setEndDate(appResult.data.apps[0].App_endDate)
+            setOpen(appResult.data.apps[0].App_permit_Open)
+            setTodo(appResult.data.apps[0].App_permit_toDoList)
+            setDoing(appResult.data.apps[0].App_permit_Doing)
+            setDone(appResult.data.apps[0].App_permit_Done)
+
+            //Set list
+            if(appResult.data.apps[0].App_permit_Open) document.getElementById("permitOpen").value=appResult.data.apps[0].App_permit_Open;
+            if(appResult.data.apps[0].App_permit_toDoList)document.getElementById("permitTodo").value=appResult.data.apps[0].App_permit_toDoList;
+            if(appResult.data.apps[0].App_permit_Doing)document.getElementById("permitDoing").value=appResult.data.apps[0].App_permit_Doing;
+            if(appResult.data.apps[0].App_permit_Done)document.getElementById("permitDone").value=appResult.data.apps[0].App_permit_Done;
+        }
+    }
 
     //Get groups
-    async function getGroupsNapp(){
+    async function getGroups(){
         try{
             //Get all groups
-            const groupResult = await Axios.post('http://localhost:3000/task/task-name', {}, {withCredentials:true});
-
-            //Get app
-            const appResult = await Axios.post('http://localhost:3000/get-application', {acronym:state.acronym}, {withCredentials:true})
-
-            console.log(appResult.data);
-
-            //Set app
-            if(appResult.data.success){
-                setAcronym(appResult.data.apps[0].App_Acronym)
-                setDescription(appResult.data.apps[0].App_Description)
-                setRnumber(appResult.data.apps[0].App_Rnumber)
-                setStartDate(appResult.data.apps[0].App_startDate)
-                setEndDate(appResult.data.apps[0].App_endDate)
-                setOpen(appResult.data.apps[0].App_permit_Open)
-                setTodo(appResult.data.apps[0].App_permit_toDoList)
-                setDoing(appResult.data.apps[0].App_permit_Doing)
-                setDone(appResult.data.apps[0].App_permit_Done)
-            }
+            const groupResult = await Axios.post('http://localhost:3000/allgroups', {un:srcState.username, gn:"admin"}, {withCredentials:true});
 
             //Set groups
             if(groupResult.data.success){
                 setGroups(groupResult.data.groups);
             }
-            else{
-                srcDispatch({type:"flashMessage", value:"Error in getting groups"});
-            }
         }
         catch(e){
             console.log(e)
             srcDispatch({type:"flashMessage", value:"Error in getting app"});
-            navigate(-1);
+            navigate("/application-management");
         }
     }
 
@@ -125,8 +128,12 @@ function EditApp() {
     }, [])
 
     useEffect(()=>{
-        getGroupsNapp();
+        getGroups();
     },[srcState.username])
+
+    useEffect(()=>{
+        getApp();
+    },[groups])
 
     return ( 
         <>
@@ -203,11 +210,11 @@ function EditApp() {
 
                     <div className="mb-6">
                         <label for="desc" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Application description</label>
-                        <textarea onChange={(e)=>setDescription(e.target.value)} id="desc" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Application description...."></textarea>
+                        <textarea value={description} onChange={(e)=>setDescription(e.target.value)} id="desc" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Application description...."></textarea>
 
                     </div>
 
-                    <button type="submit" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</button>
+                    <Link type="button" to={"/application-management"} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
                     <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
                 </form>
             </div>

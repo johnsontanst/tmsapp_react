@@ -12,8 +12,8 @@ function CreateApp() {
     const navigate = useNavigate();
 
     //useState fields
-    const [acronym, setAcronym] = useState();
-    const [description, setDescription] = useState();
+    const [acronym, setAcronym] = useState("");
+    const [description, setDescription] = useState("");
     const [rnumber, setRnumber] = useState();
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
@@ -26,13 +26,36 @@ function CreateApp() {
     //HandleSubmit
     async function onSubmit(e){
         e.preventDefault();
-        console.log(acronym, description, rnumber, startDate, endDate, open, toDo, doing, done);
+        //console.log(acronym, description, rnumber, startDate, endDate, open, toDo, doing, done);
         try{
             const result = await Axios.post('http://localhost:3000/create-application',{acronym, description, rnumber, startDate, endDate, open, toDo, doing, done}, {withCredentials:true});
-
+            console.log(result.data.success);
+            if(result.data.success){
+                //clear all fields 
+                setAcronym("");
+                setRnumber("");
+                setStartDate("");
+                setEndDate("");
+                setOpen("");
+                setTodo("");
+                setDoing("");
+                setDone("");
+                document.getElementById("acronym").value ="";
+                document.getElementById("rnumber").value ="";
+                document.getElementById("startdate").value ="";
+                document.getElementById("enddate").value ="";
+                document.getElementById("permitOpen").value="";
+                document.getElementById("permitTodo").value="";
+                document.getElementById("permitDoing").value="";
+                document.getElementById("permitDone").value="";
+                document.getElementById("desc").value ="";
+                srcDispatch({type:"flashMessage", value:"Application created"});
+                return navigate("/create/application");
+            }
         }
         catch(err){
-            console.log(err.response.data.message);
+            console.log(err);
+            //console.log(err.response.data.message);
             if(err.response.data.message === "invalid end date"){
                 srcDispatch({type:"flashMessage", value:"Invalid end date"});
             }
@@ -71,13 +94,11 @@ function CreateApp() {
             if(groupResult.data.success){
                 setGroups(groupResult.data.groups);
             }
-            else{
-                srcDispatch({type:"flashMessage", value:"Error in getting groups"});
-            }
+            
         }
         catch(e){
             console.log(e)
-            srcDispatch({type:"flashMessage", value:"Error in getting groups"});
+            //srcDispatch({type:"flashMessage", value:"Error in getting groups"});
         }
     }
 
@@ -150,8 +171,8 @@ function CreateApp() {
                             </select>
                         </div>
                         <div>
-                            <label for="permitClose" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Permit doing (group)</label>
-                            <select id="permitClose" onChange={(e)=>setDoing(e.target.value)}  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <label for="permitDoing" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Permit doing (group)</label>
+                            <select id="permitDoing" onChange={(e)=>setDoing(e.target.value)}  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value=""></option>
                                 {groups.map((g, index)=>{
                                         if(g.groupName != "admin"){
