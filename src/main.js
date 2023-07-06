@@ -16,6 +16,9 @@ import FlashMessage from "./components/global/flashMessageComponent";
 import AccountsOverview from "./components/admin/accountsOverviewComponent";
 import AdminEditUser from "./components/admin/adminEditUserComponent";
 import CreateAccount from "./components/admin/createAccountComponent";
+import CreateApp from "./components/application/createAppComponent";
+import AppOverview from "./components/application/applicationOverviewComponent";
+import EditApp from "./components/application/editAppComponent";
 
 //Tailwindcss
 import './main.css';
@@ -117,6 +120,9 @@ function MainComponent(){
                             <Route path="/user-management" element={<AccountsOverview />} />
                             <Route path="/admin/user/profile" element={<AdminEditUser/>} />
                             <Route path="/create/account" element={<CreateAccount />} />
+                            <Route path="/create/application" element={<CreateApp />} />
+                            <Route path="/application-management" element={<AppOverview/>} />
+                            <Route path="/edit-application" element={<EditApp/>} />
                         </Routes>
                     </div>
                     {state.flashMessage.length != 0 ? state.flashMessage.map((alert, index)=>(
