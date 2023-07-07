@@ -31,12 +31,15 @@ function EditApp() {
         e.preventDefault();
         console.log(acronym, description, rnumber, startDate, endDate, open, toDo, doing, done);
         try{
-            const result = await Axios.post('http://localhost:3000/create-application',{acronym, description, rnumber, startDate, endDate, open, toDo, doing, done}, {withCredentials:true});
-
+            const result = await Axios.post('http://localhost:3000/update/application',{acronym, description, endDate, permitOpen:open, permitTodo:toDo, permitDoing:doing, permitDone:done}, {withCredentials:true});
+            if(result.data.success){
+                srcDispatch({type:"flashMessage", value:"application updated"});
+                navigate("/application-management");
+            }
         }
         catch(err){
             console.log(err.response.data.message);
-            if(err.response.data.message === "invalid end date"){
+            if(err.response.data.message === "End date invalid"){
                 srcDispatch({type:"flashMessage", value:"Invalid end date"});
             }
             else if(err.response.data.message === "Input require fields"){
@@ -104,7 +107,6 @@ function EditApp() {
         }
         catch(e){
             console.log(e)
-            srcDispatch({type:"flashMessage", value:"Error in getting app"});
             navigate("/application-management");
         }
     }
@@ -144,22 +146,22 @@ function EditApp() {
                 <form onSubmit={onSubmit}>
                     <div class="mb-6">
                         <label for="acronym" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Application Acronym</label>
-                        <input type="text" onChange={(e)=>setAcronym(e.target.value)} id="acronym" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Application Acronym" value={acronym} readOnly required />
+                        <input type="text" onChange={(e)=>setAcronym(e.target.value)} id="acronym" class="bg-stone-500 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Application Acronym" value={acronym} readOnly required />
                     </div>
 
                     <div class="mb-6">
                         <label for="rnumber" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Running number</label>
-                        <input type="number" id="rnumber" onChange={(e)=>setRnumber(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Running number" value={rnumber} readOnly required />
+                        <input type="number" id="rnumber" onChange={(e)=>setRnumber(e.target.value)} class="bg-stone-500 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Running number" value={rnumber} readOnly required />
                     </div>
 
                     <div class="mb-6 grid lg:grid-cols-2 gap-4 grid-cols-1">
                         <div>
                             <label for="startdate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start date</label>
-                            <input type="date" id="startdate" onChange={(e)=>setStartDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={String(startDate).substr(0,10)} readOnly required />
+                            <input type="date" id="startdate" onChange={(e)=>setStartDate(e.target.value)} class="bg-stone-500 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={String(startDate).substr(0,10)} readOnly required />
                         </div>
                         <div>
                             <label for="enddate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End date</label>
-                            <input type="date" id="enddate" onChange={(e)=>setEndDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={endDate} required />
+                            <input type="date" id="enddate" onChange={(e)=>setEndDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={String(endDate).substr(0,10)} required />
                         </div>
                         <div>
                             <label for="permitOpen" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Permit open (group)</label>

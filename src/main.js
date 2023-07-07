@@ -19,6 +19,7 @@ import CreateAccount from "./components/admin/createAccountComponent";
 import CreateApp from "./components/application/createAppComponent";
 import AppOverview from "./components/application/applicationOverviewComponent";
 import EditApp from "./components/application/editAppComponent";
+import PlanOverview from "./components/plan/planOverviewComponent";
 
 //Tailwindcss
 import './main.css';
@@ -123,6 +124,7 @@ function MainComponent(){
                             <Route path="/create/application" element={<CreateApp />} />
                             <Route path="/application-management" element={<AppOverview/>} />
                             <Route path="/edit-application" element={<EditApp/>} />
+                            <Route path="/plan-management" element={<PlanOverview/>} />
                         </Routes>
                     </div>
                     {state.flashMessage.length != 0 ? state.flashMessage.map((alert, index)=>(
