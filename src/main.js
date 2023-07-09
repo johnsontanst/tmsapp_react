@@ -20,6 +20,11 @@ import CreateApp from "./components/application/createAppComponent";
 import AppOverview from "./components/application/applicationOverviewComponent";
 import EditApp from "./components/application/editAppComponent";
 import PlanOverview from "./components/plan/planOverviewComponent";
+import CreatePlan from "./components/plan/createPlanComponent";
+import CreateTask from "./components/task/createTask";
+import PlEditTask from "./components/task/plEditTask";
+import PmEditTask from "./components/task/pmEditTask";
+import TeamEditTask from "./components/task/teamEditTask";
 
 //Tailwindcss
 import './main.css';
@@ -125,6 +130,11 @@ function MainComponent(){
                             <Route path="/application-management" element={<AppOverview/>} />
                             <Route path="/edit-application" element={<EditApp/>} />
                             <Route path="/plan-management" element={<PlanOverview/>} />
+                            <Route path="/create/plan" element={<CreatePlan/>} />
+                            <Route path="/create/task" element={<CreateTask/>} />
+                            <Route path="/pl-update/task" element={<PlEditTask/>} />
+                            <Route path="/pm-update/task" element={<PmEditTask/>} />
+                            <Route path="/team-update/task" element={<TeamEditTask/>} />
                         </Routes>
                     </div>
                     {state.flashMessage.length != 0 ? state.flashMessage.map((alert, index)=>(

@@ -88,9 +88,9 @@ function EditApp() {
 
             //Set list
             if(appResult.data.apps[0].App_permit_Open) document.getElementById("permitOpen").value=appResult.data.apps[0].App_permit_Open;
-            if(appResult.data.apps[0].App_permit_toDoList)document.getElementById("permitTodo").value=appResult.data.apps[0].App_permit_toDoList;
-            if(appResult.data.apps[0].App_permit_Doing)document.getElementById("permitDoing").value=appResult.data.apps[0].App_permit_Doing;
-            if(appResult.data.apps[0].App_permit_Done)document.getElementById("permitDone").value=appResult.data.apps[0].App_permit_Done;
+            if(appResult.data.apps[0].App_permit_toDoList) document.getElementById("permitTodo").value=appResult.data.apps[0].App_permit_toDoList;
+            if(appResult.data.apps[0].App_permit_Doing) document.getElementById("permitDoing").value=appResult.data.apps[0].App_permit_Doing;
+            if(appResult.data.apps[0].App_permit_Done) document.getElementById("permitDone").value=appResult.data.apps[0].App_permit_Done;
         }
     }
 
