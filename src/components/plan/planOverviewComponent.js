@@ -29,6 +29,13 @@ function PlanOverview() {
     const [closed, setClosed] = useState([]);
     const [plan, setPlan] = useState([]);
 
+    //authorization for tasks
+    const [aCreate, setACreate] = useState(false);
+    const [aOpen, setAOpen] = useState(false);
+    const [aTodo, setATodo] = useState(false);
+    const [aDoing, setADoing] = useState(false);
+    const [aDone, setADone] = useState(false);
+
     //handle plan start and end date (display)
     async function displaySEdate(startDate, endDate, planColour){
         var tempStartDate = new Date(startDate).toISOString().substr(0,10);
@@ -167,6 +174,7 @@ function PlanOverview() {
 
     //useEffect
     useEffect(()=>{
+        console.log(state.acronym)
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
@@ -174,6 +182,9 @@ function PlanOverview() {
                 if(!await res.data.groups.includes("project leader")){
                     navigate("/");
                 }
+
+                //Implement the authroization 
+                
             }
         }
         getUserInfo();

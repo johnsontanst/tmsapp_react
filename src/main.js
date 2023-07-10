@@ -46,7 +46,10 @@ function MainComponent(){
         flashMessage : [],
         username: "nil",
         group: [],
-        isAdmin : false
+        isAdmin : false,
+        isPL: false,
+        isPM: false,
+        isDev:false
     }
 
 
@@ -57,10 +60,16 @@ function MainComponent(){
                 draft.username = action.value.username
                 draft.isAdmin = action.admin
                 draft.group = action.value.groups
+                draft.isPL = action.value.isPL
+                draft.isPM = action.value.isPM
+                draft.isDev = action.value.isDev
                 return
             case"logout":
-                draft.logIn = false;
-                draft.isAdmin = false;
+                draft.logIn = false
+                draft.isAdmin = false
+                draft.isPL = false
+                draft.isPM = false
+                draft.isDev = false
                 return
             case "flashMessage":                
                 draft.flashMessage.push(action.value);
@@ -104,10 +113,17 @@ function MainComponent(){
     //useEffect
     useEffect(()=>{
         const getUserInfo = async()=>{
-            const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-            if(res.data.success){
-                if(res.data.status == 0) logoutFunc();
-                dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+            try{
+                const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+                if(res.data.success){
+                    console.log(res.data.isPL);
+                    if(res.data.status == 0) logoutFunc();
+                    dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+                    
+                }
+            }
+            catch(err){
+                console.log(err);
             }
         }
         getUserInfo();

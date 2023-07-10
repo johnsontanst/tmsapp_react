@@ -61,6 +61,10 @@ function CreateTask() {
         }
     }
 
+    //HandlePrev
+    async function handlePrev(e){
+        return navigate(-1, {state:{acronym:acronym}});
+    }
 
     //Get plans by acronym
     async function getPlans(){
@@ -85,6 +89,7 @@ function CreateTask() {
 
     //useEffect
     useEffect(()=>{
+        console.log(state.acronym)
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
@@ -136,7 +141,7 @@ function CreateTask() {
                             </select>
                         </div>
                         <div>
-                            <p><span className="text-md font-semibold">Application acronym: </span>{state.acronym}</p>
+                            <p><span className="text-md font-semibold">Application acronym: </span>{acronym}</p>
                             <p><span className="text-md font-semibold">Create date: </span>{new Date().toISOString().substr(0,10)}</p>
                             <p><span className="text-md font-semibold">Task creator </span>{srcState.username}</p>
                             <p><span className="text-md font-semibold">Task owner: </span>{srcState.username}</p>
@@ -146,7 +151,7 @@ function CreateTask() {
                         
                     </div>
 
-                    <Link type="button" to={"/application-management"} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
+                    <Link type="button" onClick={handlePrev} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
                     <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
                 </form>
             </div>

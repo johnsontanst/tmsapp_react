@@ -19,9 +19,10 @@ function AppOverview() {
     //Get application
     async function getApplication(){
         try{
-            const appResult = await Axios.post('http://localhost:3000/all-application', {}, {withCredentials:true});
+            const appResult = await Axios.post('http://localhost:3000/all-application', {un:srcState.username}, {withCredentials:true});
             if(appResult.data.success){
                 setApps(appResult.data.apps);
+
             }
             else{
                 srcDispatch({type:"flashMessage", value:"Error in getting groups"});
@@ -29,7 +30,7 @@ function AppOverview() {
         }
         catch(e){
             console.log(e)
-            srcDispatch({type:"flashMessage", value:"Error in getting groups"});
+            //srcDispatch({type:"flashMessage", value:"Error in getting groups"});
         }
     }
 
@@ -40,12 +41,26 @@ function AppOverview() {
     //useEffect
     useEffect(()=>{
         const getUserInfo = async()=>{
-            const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-            if(res.data.success){
-                srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-                if(!await res.data.groups.includes("project leader")){
-                    navigate("/");
+            try{
+                const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+                if(res.data.success){
+                    srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+                    if(!await res.data.groups.includes("project leader")){
+                        navigate("/");
+                    }
+                    //check is the user is in any of the group
+                    if(!res.data.isPM && !res.data.isPL && !res.data.isDev ){
+                        srcDispatch({type:"flashMessage", value:"Not authorized"})
+                        navigate("/");
+                    }
                 }
+            }
+            catch(err){
+                if(err.response.data.message === "invalid token"){
+                    srcDispatch({type:"flashMessage", value:"Please login first.."})
+                    navigate("/login")
+                }
+                navigate("/login")
             }
         }
         getUserInfo();

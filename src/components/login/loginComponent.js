@@ -44,13 +44,19 @@ function LoginForm() {
   //useEffect()
   useEffect(()=>{
     const getUserInfo = async()=>{
-      const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-      if(res.data.success){
-          srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-          navigate("/");
+      try{
+          const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+          if(res.data.success){
+              if(res.data.status == 0) logoutFunc();
+              dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+              
+          }
       }
-    }
-    getUserInfo();
+      catch(err){
+          console.log(err);
+      }
+  }
+  getUserInfo();
   },[])
   return (
     <>

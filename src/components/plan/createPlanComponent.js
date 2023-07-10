@@ -16,7 +16,7 @@ function CreatePlan() {
     const[acronym, setAcronym] = useState(state.acronym);
     const [planStartDate, setPlanStartDate] = useState();
     const [planEndDate, setPlanEndDate] = useState();
-    const [planColour, setPlanColour] = useState();
+    const [planColour, setPlanColour] = useState("#000000");
 
     //navigate
     const navigate = useNavigate();
@@ -42,7 +42,7 @@ function CreatePlan() {
           setPlanName("");
           setPlanStartDate("");
           setPlanEndDate("");
-          setPlanColour("");
+          setPlanColour("#000000");
           document.getElementById("planName").value ="";
           document.getElementById("startdate").value ="";
           document.getElementById("enddate").value ="";
@@ -52,7 +52,7 @@ function CreatePlan() {
       }
       catch(err){
 
-        console.log(err.response.data.message)
+        console.log(err)
         if(err.response.data.message === "missing input"){
           srcDispatch({type:"flashMessage", value:"Missing input"});
         }

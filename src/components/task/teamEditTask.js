@@ -38,7 +38,7 @@ function TeamEditTask() {
     async function onSubmit(e){
         e.preventDefault();
         try{
-            const result = await Axios.post("http://localhost:3000/team-update/task", {taskId:thisTask.Task_id, un:srcState.username, userNotes:taskNotes, taskState:"doing", acronym:thisTask.Task_app_Acronym, taskPlan}, {withCredentials:true});
+            const result = await Axios.post("http://localhost:3000/team-update/task", {taskId:thisTask.Task_id, un:srcState.username, userNotes:taskNotes, taskState:"done", acronym:thisTask.Task_app_Acronym, taskPlan}, {withCredentials:true});
             console.log(result);
             if(result.data.success){
                 srcDispatch({type:"flashMessage", value:"Task updated"});
