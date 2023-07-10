@@ -20,7 +20,9 @@ function LoginForm() {
     try{
       await Axios.post('http://localhost:3000/login', {username, password}, {withCredentials: true}).then((data)=>{
         if(data.data.success){
-          srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin")});
+          console.log(data.data)
+          console.log(data.data.groups.includes("project leader"))
+          srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin"), isPL:data.data.groups.includes("project leader")});
           return navigate("/");
         }
         else{
@@ -37,6 +39,7 @@ function LoginForm() {
       })
     }
     catch(e){
+      console.log(e)
       srcDispatch({type:"flashMessage", value:"Login error, pelase try again"});
     }
   }

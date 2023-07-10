@@ -45,6 +45,60 @@ function PlanOverview() {
         setPlanColour(planColour);
     }
 
+    //Set authroization
+    async function setAuthorization(){
+        //Get application
+        const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym}, {withCredentials:true})
+
+        if(appResult.data.success){
+            
+            //Check if current user got permission for create 
+            if(appResult.data.apps[0].App_permit_Create != null){
+                //Checkgroup
+                let createR = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Create});
+                if(createR.data.cgResult){
+                    setACreate(true);
+                }
+            }
+
+            //Check if current user got permission for open 
+            if(appResult.data.apps[0].App_permit_Open != null){
+                //Checkgroup
+                let OpenR = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Open});
+                if(OpenR.data.cgResult){
+                    setAOpen(true);
+                }
+            }
+
+            //Check if current user got permission for todo 
+            if(appResult.data.apps[0].App_permit_toDoList != null){
+                //Checkgroup
+                let todoR = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_toDoList});
+                if(todoR.data.cgResult){
+                    setATodo(true);
+                }
+            }
+
+            //Check if current user got permission for doing 
+            if(appResult.data.apps[0].App_permit_Doing != null){
+                //Checkgroup
+                let doingR = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Doing});
+                if(doingR.data.cgResult){
+                    setADoing(true);
+                }
+            }
+
+            //Check if current user got permission for done 
+            if(appResult.data.apps[0].App_permit_Done != null){
+                //Checkgroup
+                let doneR = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Done});
+                if(doneR.data.cgResult){
+                    setADone(true);
+                }
+            }
+        }
+    }
+
     //get application, plan and task
     async function getApp(){
         //check state acronym 
@@ -52,8 +106,6 @@ function PlanOverview() {
             srcDispatch({type:"flashMessage", value:"Invalid acronym"});
             navigate(-1);
         }
-
-        //check roles
 
         //Axios get app
         const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym}, {withCredentials:true})
@@ -186,6 +238,9 @@ function PlanOverview() {
                 //Implement the authroization 
                 
             }
+            else{
+                navigate("/")
+            }
         }
         getUserInfo();
     }, [])
@@ -193,6 +248,12 @@ function PlanOverview() {
     useEffect(()=>{
         getApp();
     },[state.acronym])
+
+    useEffect(()=>{
+        if(srcState.username != "nil"){
+            setAuthorization();
+        }
+    },[srcState.username])
 
     return ( 
         <>
@@ -218,9 +279,10 @@ function PlanOverview() {
                                 </select>
                             </div>
                         </div>
+                        
                         <div className="grid grid-rows-2 gap-3">
-                            <Link to={"/create/plan"} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" state={{acronym:state.acronym}}>Create plan</Link>
-                            <Link to={"/create/task"} state={{acronym:state.acronym}} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Create Task</Link>
+                            {aOpen && <Link to={"/create/plan"} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" state={{acronym:state.acronym}}>Create plan</Link>}
+                            {aCreate && <Link to={"/create/task"} state={{acronym:state.acronym}} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Create Task</Link>}
                         </div>
                     </div>
                 </div>
@@ -252,15 +314,17 @@ function PlanOverview() {
                                 </div>
                                 <div class="px-6 pt-4 pb-2">
                                     <div className="flex justify-between">
-                                        <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
-                                        </div></Link>
+                                        <div></div>
 
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}}>Edit</Link>
+                                        {aOpen ? 
+                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}}>Edit</Link> 
+                                        : 
+                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}}>View</Link>}
 
-                                        <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
-                                        </div></Link>
+                                        {aOpen && <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
+                                        <div title="RELEASE" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
+                                        </div></Link>}
+                                        
                                     </div>
                                     
                                 </div>
@@ -294,15 +358,22 @@ function PlanOverview() {
                                 </div>
                                 <div class="px-6 pt-4 pb-2">
                                     <div className="flex justify-between">
-                                        <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
-                                        </div></Link>
-
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link>
-
+                    
+                                        <div></div>
+                                        
+                                        {aTodo ? 
+                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link> 
+                                        : 
+                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>}
+                                        
+                                        {aTodo ? 
                                         <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
                                         <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                                         </div></Link>
+                                        :
+                                        <div></div>
+                                        }
+                                        
                                     </div>
                                     
                                 </div>
@@ -337,15 +408,27 @@ function PlanOverview() {
                                 </div>
                                 <div class="px-6 pt-4 pb-2">
                                     <div className="flex justify-between">
+                                        {aDoing ?
                                         <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
                                         <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
                                         </div></Link>
-
+                                        :
+                                        <div></div>
+                                        }
+                                        
+                                        {aDoing ?
                                         <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link>
-
+                                        :
+                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>
+                                        }
+                                        
+                                        {aDoing ?
                                         <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
                                         <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                                         </div></Link>
+                                        :
+                                        <div></div>
+                                        }
                                     </div>
                                     
                                 </div>
@@ -378,15 +461,28 @@ function PlanOverview() {
                                 </div>
                                 <div class="px-6 pt-4 pb-2">
                                     <div className="flex justify-between">
+                                        {aDone ?
                                         <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
                                         <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
                                         </div></Link>
+                                        :
+                                        <div></div>
+                                        }
 
+                                        {aDone ?
                                         <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link>
+                                        :
+                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>
+                                        }
 
+                                        {aDone ?
                                         <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
                                         <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                                         </div></Link>
+                                        :
+                                        <div></div>
+                                        }
+                                        
                                     </div>
                                     
                                 </div>
@@ -419,16 +515,12 @@ function PlanOverview() {
 
                                     </div>
                                     <div class="px-6 pt-4 pb-2">
-                                        <div className="flex justify-between">
-                                            <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
-                                            <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
-                                            </div></Link>
+                                        <div className="flex justify-center">
+                                            
 
-                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link>
+                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>
 
-                                            <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
-                                            <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
-                                            </div></Link>
+                                         
                                         </div>
                                         
                                     </div>

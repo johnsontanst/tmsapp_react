@@ -13,7 +13,7 @@ function CreatePlan() {
 
     //required variables 
     const [planName, setPlanName] = useState();
-    const[acronym, setAcronym] = useState(state.acronym);
+    const[acronym, setAcronym] = useState();
     const [planStartDate, setPlanStartDate] = useState();
     const [planEndDate, setPlanEndDate] = useState();
     const [planColour, setPlanColour] = useState("#000000");
@@ -77,12 +77,19 @@ function CreatePlan() {
       if(!state.acronym){
         navigate(-1);
       }
-
+      
       //get app 
       const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym},{withCredentials:true});
       if(!appResult.data.success){
         srcDispatch({type:"flashMessage", value:"Invalid app acronym"});
         navigate(-1);
+      }else{
+        //checkgroup
+        const ableToCreatePlan = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Open})
+        if(!ableToCreatePlan.data.cgResult){
+          srcDispatch({type:"flashMessage", value:"Not authorized"});
+          navigate(-1);
+        }
       }
     }
 
@@ -92,10 +99,16 @@ function CreatePlan() {
 
     //useEffect
     useEffect(()=>{
+
       const getUserInfo = async()=>{
+        //Check if state is null
+          if(state == null){
+            return navigate("/")
+          }
           const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
           if(res.data.success){
               srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+              setAcronym(state.acronym);
               if(!await res.data.groups.includes("project leader")){
                 srcDispatch({type:"flashMessage", value:"Not project leader"});
                 navigate("/");
@@ -103,8 +116,13 @@ function CreatePlan() {
           }
       }
       getUserInfo();
-      checkApp();
-  }, [])
+    }, [])
+
+    useEffect(()=>{
+      if(srcState.username != "nil"){
+        checkApp();
+      }
+    }, [srcState.username]);
 
   return (
     <>

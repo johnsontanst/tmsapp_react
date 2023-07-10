@@ -48,8 +48,7 @@ function MainComponent(){
         group: [],
         isAdmin : false,
         isPL: false,
-        isPM: false,
-        isDev:false
+        ableToAccessApp: true
     }
 
 
@@ -60,9 +59,8 @@ function MainComponent(){
                 draft.username = action.value.username
                 draft.isAdmin = action.admin
                 draft.group = action.value.groups
-                draft.isPL = action.value.isPL
-                draft.isPM = action.value.isPM
-                draft.isDev = action.value.isDev
+                draft.isPL = action.isPL
+                draft.ableToAccessApp = action.value.planAssoisated
                 return
             case"logout":
                 draft.logIn = false
@@ -113,18 +111,17 @@ function MainComponent(){
     //useEffect
     useEffect(()=>{
         const getUserInfo = async()=>{
-            try{
-                const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-                if(res.data.success){
-                    console.log(res.data.isPL);
-                    if(res.data.status == 0) logoutFunc();
-                    dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-                    
-                }
+            
+            const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+            if(res.data.success){
+                if(res.data.status == 0) logoutFunc();
+                dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
+                
             }
-            catch(err){
-                console.log(err);
+            else{
+                dispatch({type:"logout"})
             }
+            
         }
         getUserInfo();
     }, [])

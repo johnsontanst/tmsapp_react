@@ -61,6 +61,27 @@ function CreateTask() {
         }
     }
 
+    //check if app exist 
+    async function checkApp(){
+        if(!state.acronym){
+            navigate(-1);
+        }
+        
+        //get app 
+        const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym},{withCredentials:true});
+        if(!appResult.data.success){
+            srcDispatch({type:"flashMessage", value:"Invalid app acronym"});
+            navigate(-1);
+        }else{
+            //checkgroup
+            const ableToCreatePlan = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Open})
+            if(!ableToCreatePlan.data.cgResult){
+            srcDispatch({type:"flashMessage", value:"Not authorized"});
+            navigate(-1);
+            }
+        }
+        }
+
     //HandlePrev
     async function handlePrev(e){
         return navigate(-1, {state:{acronym:acronym}});
@@ -89,8 +110,11 @@ function CreateTask() {
 
     //useEffect
     useEffect(()=>{
-        console.log(state.acronym)
         const getUserInfo = async()=>{
+            //check state if null
+            if(state === null){
+                navigate("/")
+            }
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
@@ -103,7 +127,10 @@ function CreateTask() {
     }, [])
 
     useEffect(()=>{
-        getPlans();
+        if(srcState.username != "nil"){
+            getPlans();
+            checkApp();
+        }
     },[srcState.username])
 
     return ( 

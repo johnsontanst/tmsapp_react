@@ -20,6 +20,7 @@ function EditApp() {
     const [rnumber, setRnumber] = useState();
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
+    const [create, setCreate] = useState();
     const [open, setOpen] = useState();
     const [toDo, setTodo] = useState();
     const [doing, setDoing] = useState();
@@ -29,9 +30,10 @@ function EditApp() {
     //HandleSubmit
     async function onSubmit(e){
         e.preventDefault();
-        console.log(acronym, description, rnumber, startDate, endDate, open, toDo, doing, done);
+        console.log(acronym, description, rnumber, startDate, endDate, create, open, toDo, doing, done);
         try{
-            const result = await Axios.post('http://localhost:3000/update/application',{acronym, description, endDate, permitOpen:open, permitTodo:toDo, permitDoing:doing, permitDone:done}, {withCredentials:true});
+            const result = await Axios.post('http://localhost:3000/update/application',{acronym, description, endDate, permitCreate:create, permitOpen:open, permitTodo:toDo, permitDoing:doing, permitDone:done}, {withCredentials:true});
+            console.log(result);
             if(result.data.success){
                 srcDispatch({type:"flashMessage", value:"application updated"});
                 navigate("/application-management");
@@ -69,6 +71,7 @@ function EditApp() {
         }
     }
 
+
     //Get app
     async function getApp(){
         //Axios app
@@ -81,12 +84,14 @@ function EditApp() {
             setRnumber(appResult.data.apps[0].App_Rnumber)
             setStartDate(appResult.data.apps[0].App_startDate)
             setEndDate(appResult.data.apps[0].App_endDate)
+            setCreate(appResult.data.apps[0].App_permit_Create)
             setOpen(appResult.data.apps[0].App_permit_Open)
             setTodo(appResult.data.apps[0].App_permit_toDoList)
             setDoing(appResult.data.apps[0].App_permit_Doing)
             setDone(appResult.data.apps[0].App_permit_Done)
 
             //Set list
+            if(appResult.data.apps[0].App_permit_Create) document.getElementById("permitCreate").value=appResult.data.apps[0].App_permit_Create;
             if(appResult.data.apps[0].App_permit_Open) document.getElementById("permitOpen").value=appResult.data.apps[0].App_permit_Open;
             if(appResult.data.apps[0].App_permit_toDoList) document.getElementById("permitTodo").value=appResult.data.apps[0].App_permit_toDoList;
             if(appResult.data.apps[0].App_permit_Doing) document.getElementById("permitDoing").value=appResult.data.apps[0].App_permit_Doing;
@@ -130,7 +135,9 @@ function EditApp() {
     }, [])
 
     useEffect(()=>{
-        getGroups();
+        if(srcState.username != "nil"){
+            getGroups();
+        }
     },[srcState.username])
 
     useEffect(()=>{
@@ -162,6 +169,17 @@ function EditApp() {
                         <div>
                             <label for="enddate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End date</label>
                             <input type="date" id="enddate" onChange={(e)=>setEndDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={String(endDate).substr(0,10)} required />
+                        </div>
+                        <div>
+                            <label for="permitCreate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Permit create (group)</label>
+                            <select onChange={(e)=>setCreate(e.target.value)}  id="permitCreate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value=""></option>
+                                {groups.map((g, index)=>{
+                                    if(g.groupName != "admin"){
+                                        return <option key={index} value={g.groupName}>{g.groupName}</option>;
+                                    }
+                                })}
+                            </select>
                         </div>
                         <div>
                             <label for="permitOpen" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Permit open (group)</label>
