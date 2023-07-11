@@ -458,7 +458,8 @@ function PlanOverview() {
                                     <div class="px-6 pt-4 pb-2">
                                         <div className="flex justify-between">
                                             {aDone ?
-                                            <Link type="button" to={"/pl-update/task"} className=""><div class="w-5 overflow-hidden inline-block" state={{taskId:task.Task_id, acronym:state.acronym, newState:"reject"}}>
+                                            <Link type="button" to={"/pl-update/task"} className="" state={{taskId:task.Task_id, acronym:state.acronym, newState:"reject"
+                                            }}><div class="w-5 overflow-hidden inline-block">
                                             <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right" title="REJECT"></div>
                                             </div></Link>
                                             :

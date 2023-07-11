@@ -52,7 +52,7 @@ function PlEditTask() {
             if(permit_g.data.apps[0].App_Acronym){
                 gn = permit_g.data.apps[0].App_permit_Done
             }
-
+            console.log(newState)
             const result = await Axios.post("http://localhost:3000/pl-update/task", {taskId:thisTask.Task_id, un:srcState.username, gn, userNotes:taskNotes, taskState:newState, acronym:thisTask.Task_app_Acronym, plan:taskPlan}, {withCredentials:true});
 
             if(result.data.success){
@@ -106,16 +106,20 @@ function PlEditTask() {
 
                 //Set new state
                 if(state.newState === "edit"){
+                    console.log("edit")
                     setNewState(taskResult.data.task[0].Task_state)
                 }
                 else if(state.newState === "accept"){
-                    setNewState("done")
+                    console.log("closed")
+                    setNewState("closed")
+                    console.log(newState)
                 }
                 else if(state.newState === "reject"){
+                    console.log("doing")
                     setNewState("doing")
                 }
                 setVerbState(state.newState);
-
+                console.log(newState)
                 //Set onload to false
                 setOnLoad(false);
             }
@@ -146,16 +150,16 @@ function PlEditTask() {
     useEffect(()=>{
         const getUserInfo = async()=>{
             //Check state acronym, task id, newState
-            if(state == null){
+            if(state === null){
                 navigate(-1);
             }
-            if(state.acronym == null){
+            if(state.acronym === null){
                 navigate(-1);
             }
-            if(state.taskId == null){
+            if(state.taskId ===null){
                 navigate(-1);
             }
-            if(state.newState == null){
+            if(state.newState === null){
                 navigate(-1);
             }
             if(state.newState === "reject" || state.newState === "edit" || state.newState === "accept"){
