@@ -7,7 +7,7 @@ import StateContext from "../../StateContext";
 import DispatchContext from "../../DispatchContext";
 
 //Import components
-import Modal from "../global/modelComponent";
+import Modal from "../global/modalComponent";
 
 function AppOverview() {
     //navigate
@@ -47,6 +47,9 @@ function AppOverview() {
                     srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
                     //console.log(res.data.groups.includes("project leader"))
                     
+                }
+                else{
+                    navigate("/")
                 }
             }
             catch(err){

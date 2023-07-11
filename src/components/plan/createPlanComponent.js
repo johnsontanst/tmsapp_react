@@ -13,10 +13,13 @@ function CreatePlan() {
 
     //required variables 
     const [planName, setPlanName] = useState();
-    const[acronym, setAcronym] = useState();
+    const [acronym, setAcronym] = useState();
     const [planStartDate, setPlanStartDate] = useState();
     const [planEndDate, setPlanEndDate] = useState();
     const [planColour, setPlanColour] = useState("#000000");
+    const [appStartDate, setAppStartDate] = useState();
+    const [appEndDate, setAppEndDate] = useState();
+    const [gn, setGn] = useState();
 
     //navigate
     const navigate = useNavigate();
@@ -32,8 +35,8 @@ function CreatePlan() {
       
       //create plan
       try{
-        const result = await Axios.post("http://localhost:3000/create-plan", {planName, startDate:planStartDate, endDate:planEndDate, appAcronym:acronym, colour:planColour}, {withCredentials:true});
-        console.log(result)
+        const result = await Axios.post("http://localhost:3000/create-plan", {planName, startDate:planStartDate, endDate:planEndDate, appAcronym:acronym, colour:planColour, un:srcState.username, gn}, {withCredentials:true});
+
         if(result.data.success){
           //Display message
           srcDispatch({type:"flashMessage", value:"Plan created"});
@@ -65,6 +68,10 @@ function CreatePlan() {
         else if(err.response.data.message === "date invalid"){
           srcDispatch({type:"flashMessage", value:"Plan start and end date must be in application start and end date"});
         }
+        else if(err.response.data.message === "not authorized"){
+          srcDispatch({type:"flashMessage", value:"Not authorized"});
+          navigate(-1);
+        }
         else{
           srcDispatch({type:"flashMessage", value:"Create plan error"});
         }
@@ -83,14 +90,8 @@ function CreatePlan() {
       if(!appResult.data.success){
         srcDispatch({type:"flashMessage", value:"Invalid app acronym"});
         navigate(-1);
-      }else{
-        //checkgroup
-        const ableToCreatePlan = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Open})
-        if(!ableToCreatePlan.data.cgResult){
-          srcDispatch({type:"flashMessage", value:"Not authorized"});
-          navigate(-1);
-        }
       }
+      setGn(appResult.data.apps[0].App_permit_Open);
     }
 
     //context 
@@ -103,16 +104,27 @@ function CreatePlan() {
       const getUserInfo = async()=>{
         //Check if state is null
           if(state == null){
-            return navigate("/")
+            return navigate(-1)
           }
+          if(!state.aOpen || state.aOpen == null){
+            return navigate(-1)
+          }
+          if(!state.appStartDate || state.appStartDate == null){
+            return navigate(-1)
+          }
+          if(!state.appEndDate || state.appEndDate == null){
+            return navigate(-1)
+          }
+          //Get user info
           const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
           if(res.data.success){
               srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
               setAcronym(state.acronym);
-              if(!await res.data.groups.includes("project leader")){
-                srcDispatch({type:"flashMessage", value:"Not project leader"});
-                navigate("/");
-              }
+              //Set app start date and end date
+              setAppStartDate(state.appStartDate);
+              setAppEndDate(state.appEndDate);
+          }else{
+            navigate("/")
           }
       }
       getUserInfo();
@@ -133,16 +145,18 @@ function CreatePlan() {
           <form onSubmit={onSubmit}>
               <div class="mb-6">
                   <label for="planName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan name</label>
-                  <input type="text" onChange={(e)=>setPlanName(e.target.value)} id="planName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Application Acronym" required />
+                  <input type="text" onChange={(e)=>setPlanName(e.target.value)} id="planName" pattern="^[a-zA-Z0-9_ ]+$" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Plan name (No special charcters)" required />
               </div>
               <div class="mb-6 grid lg:grid-cols-3 gap-4 grid-cols-1">
                   <div>
-                      <label for="startdate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start date</label>
-                      <input type="date" id="startdate" onChange={(e)=>setPlanStartDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                      <label for="startdate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan start date</label>
+                      <input type="date" min={new Date().toISOString().substr(0,10)} id="startdate" onChange={(e)=>setPlanStartDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                      <p className="text-sm">Application start date: {appStartDate}</p>
                   </div>
                   <div>
-                      <label for="enddate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End date</label>
-                      <input type="date" id="enddate" onChange={(e)=>setPlanEndDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                      <label for="enddate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan end date</label>
+                      <input type="date" min={planStartDate} max={appEndDate} id="enddate" onChange={(e)=>setPlanEndDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                      <p className="text-sm">Application start date: {appEndDate}</p>
                   </div>
                   <div>
                     <label for="planColour" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan colour</label>

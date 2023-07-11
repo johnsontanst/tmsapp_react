@@ -21,6 +21,7 @@ function CreateTask() {
     const [taskNotes, setTaskNotes] = useState("");
     const [taskPlan, setTaskPlan] = useState("");
     const [taskApp, setTaskApp] = useState("");
+    const [gn, setGn] = useState("")
     //const [taskOwner, setTaskOwner] = useState();
     //const [taskCreator, setTaskCreator] = useState();
     const [plans, setPlans] = useState([]);
@@ -34,7 +35,7 @@ function CreateTask() {
         e.preventDefault();
         //console.log(acronym, description, rnumber, startDate, endDate, open, toDo, doing, done);
         try{
-            const result = await Axios.post('http://localhost:3000/create-task',{taskName, taskDescription, taskNotes, taskPlan, taskApp:acronym, taskCreator:srcState.username, taskOwner:srcState.username, un:srcState.username}, {withCredentials:true});
+            const result = await Axios.post('http://localhost:3000/create-task',{taskName, taskDescription, taskNotes, taskPlan, taskApp:acronym, taskCreator:srcState.username, taskOwner:srcState.username, un:srcState.username, gn}, {withCredentials:true});
 
             if(result.data.success){
 
@@ -69,18 +70,12 @@ function CreateTask() {
         
         //get app 
         const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym},{withCredentials:true});
+        console.log(appResult);
         if(!appResult.data.success){
             srcDispatch({type:"flashMessage", value:"Invalid app acronym"});
             navigate(-1);
-        }else{
-            //checkgroup
-            const ableToCreatePlan = await Axios.post("http://localhost:3000/cg", {un:srcState.username, gn:appResult.data.apps[0].App_permit_Open})
-            if(!ableToCreatePlan.data.cgResult){
-            srcDispatch({type:"flashMessage", value:"Not authorized"});
-            navigate(-1);
-            }
         }
-        }
+    }
 
     //HandlePrev
     async function handlePrev(e){
@@ -93,8 +88,12 @@ function CreateTask() {
             if(state.acronym) setAcronym(state.acronym);
 
             const planResult = await Axios.post('http://localhost:3000/all-plan/app', {app_Acronym:state.acronym}, {withCredentials:true});
+            const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym})
             if(planResult.data.success){
                 setPlans(planResult.data.plans);
+            }
+            if(appResult.data.success){
+                setGn(appResult.data.apps[0].App_permit_Create);
             }
             
         }
@@ -113,14 +112,23 @@ function CreateTask() {
         const getUserInfo = async()=>{
             //check state if null
             if(state === null){
-                navigate("/")
+                return navigate("/")
             }
+            if(!state.aCreate || state.aCreate == null){
+                return navigate("/")
+            }
+
+            //Get user info
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+            console.log(res)
             if(res.data.success){
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                 if(!await res.data.groups.includes("project leader")){
                     navigate("/");
                 }
+            }
+            else{
+                navigate("/")
             }
         }
         getUserInfo();
@@ -179,7 +187,7 @@ function CreateTask() {
                     </div>
 
                     <Link type="button" onClick={handlePrev} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
-                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create</button>
                 </form>
             </div>
         </>

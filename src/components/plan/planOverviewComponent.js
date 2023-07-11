@@ -6,7 +6,11 @@ import Axios from "axios";
 import StateContext from "../../StateContext";
 import DispatchContext from "../../DispatchContext";
 
+//import task view more modal
+import TaskModal from "../global/taskModalComponent";
 
+//import onload
+import IsLoadingComponent from "../global/isLoadingComponent";
 
 function PlanOverview() {
     //useLocation to get the acronym from the Link button
@@ -35,6 +39,9 @@ function PlanOverview() {
     const [aTodo, setATodo] = useState(false);
     const [aDoing, setADoing] = useState(false);
     const [aDone, setADone] = useState(false);
+
+    //Onload 
+    const [onLoad, setOnLoad] = useState(true);
 
     //handle plan start and end date (display)
     async function displaySEdate(startDate, endDate, planColour){
@@ -127,7 +134,9 @@ function PlanOverview() {
         //Axios get task by app acronym
         const taskResult = await Axios.post("http://localhost:3000/all-task/app", {app_Acronym:state.acronym}, {withCredentials:true});
         if(taskResult.data.success){
-            console.log(taskResult.data.tasks);
+            //Set onload to false
+            setOnLoad(false);
+            //console.log(taskResult.data.tasks);
             //re-arrange tasks into different state
             for(const k in taskResult.data.tasks){
                 if(taskResult.data.tasks[k].Task_state === "open"){
@@ -216,6 +225,10 @@ function PlanOverview() {
 
                 }
             }
+
+        }else{
+            //Set onload to false
+            setOnLoad(false);
         }
         
     }
@@ -226,16 +239,12 @@ function PlanOverview() {
 
     //useEffect
     useEffect(()=>{
-        console.log(state.acronym)
+
         const getUserInfo = async()=>{
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-                if(!await res.data.groups.includes("project leader")){
-                    navigate("/");
-                }
-
-                //Implement the authroization 
+                setAcronym(state.acronym); 
                 
             }
             else{
@@ -246,8 +255,10 @@ function PlanOverview() {
     }, [])
 
     useEffect(()=>{
-        getApp();
-    },[state.acronym])
+        if(acronym != undefined){
+            getApp();
+        }
+    },[acronym])
 
     useEffect(()=>{
         if(srcState.username != "nil"){
@@ -255,247 +266,52 @@ function PlanOverview() {
         }
     },[srcState.username])
 
-    return ( 
-        <>
-            <div className="m-8">
-                <div className="flex justify-between mb-7">
-                    <div>
-                        <h1 className="text-3xl mb-5">Application: {acronym}</h1>
-                        <span className="text-md mt-1">Start date: {appStartDate}</span><br/>
-                        <span className="text-md mt-1">End date: {appEndDate}</span>
-                    </div>
-                    <div className="grid grid-cols-3">
-                        <div className="mr-4">
-                            <p>Plan start date: {startDate}</p>
-                            <p>Plan end date: {endDate}</p>
-                            <p className="flex">Plan colour: &nbsp;<div className="w-5 h-5" style={{background:planColour}}></div></p>
-                        </div>
+    if(onLoad){
+        return(
+            <>
+                <IsLoadingComponent />
+            </>
+        )
+    }else{
+        return ( 
+            <>
+                <div className="m-8">
+                    <div className="flex justify-between mb-7">
                         <div>
-                            <div className="overflow-y-auto">
-                                <select multiple={true} className="flex w-32">
-                                    {plan.map((pl, index)=>(
-                                        <option key={index} style={{background:pl.colour}} className="text-white" onClick={() => displaySEdate(pl.Plan_startDate, pl.Plan_endDate, pl.colour)}>{pl.Plan_MVP_name}</option>
-                                    ))}                                 
-                                </select>
+                            <h1 className="text-3xl mb-5">Application: {acronym}</h1>
+                            <span className="text-md mt-1">Start date: {appStartDate}</span><br/>
+                            <span className="text-md mt-1">End date: {appEndDate}</span>
+                        </div>
+                        <div className="grid grid-cols-3">
+                            <div className="mr-4">
+                                <p>Plan start date: {startDate}</p>
+                                <p>Plan end date: {endDate}</p>
+                                <p className="flex">Plan colour: &nbsp;<div className="w-5 h-5" style={{background:planColour}}></div></p>
                             </div>
-                        </div>
-                        
-                        <div className="grid grid-rows-2 gap-3">
-                            {aOpen && <Link to={"/create/plan"} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" state={{acronym:state.acronym}}>Create plan</Link>}
-                            {aCreate && <Link to={"/create/task"} state={{acronym:state.acronym}} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Create Task</Link>}
-                        </div>
-                    </div>
-                </div>
-
-                
-                <div className="grid lg:grid-cols-5 gap-4 grid-cols-2">
-                    <div className="">
-                        <h1 className="text-lg font-bold bg-sky-200 text-center">OPEN</h1>
-                        
-
-                        {open.map((task, index)=>(
-                            <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
-                                <div className="w-full h-8" style={{background:task.colour}}></div>
-                                <div class="px-6 py-4">
-                                    <div class="font-bold text-xl mb-2">{task.Task_name}</div>
-                                    <p class="text-gray-700 text-base">
-                                        ID: {task.Task_id}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Owner: {task.Task_owner}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Creator: {task.Task_creator}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Created at: {new Date(task.Task_createDate).toISOString().substr(0,10)}
-                                    </p>
-
-                                </div>
-                                <div class="px-6 pt-4 pb-2">
-                                    <div className="flex justify-between">
-                                        <div></div>
-
-                                        {aOpen ? 
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}}>Edit</Link> 
-                                        : 
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}}>View</Link>}
-
-                                        {aOpen && <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
-                                        <div title="RELEASE" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
-                                        </div></Link>}
-                                        
-                                    </div>
-                                    
+                            <div>
+                                <div className="overflow-y-auto">
+                                    <select multiple={true} className="flex w-32">
+                                        {plan.map((pl, index)=>(
+                                            <option key={index} style={{background:pl.colour}} className="text-white" onClick={() => displaySEdate(pl.Plan_startDate, pl.Plan_endDate, pl.colour)}>{pl.Plan_MVP_name}</option>
+                                        ))}                                 
+                                    </select>
                                 </div>
                             </div>
-                        ))}
-
-
+                            
+                            <div className="grid grid-rows-2 gap-3">
+                                {aOpen && <Link to={"/create/plan"} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" state={{acronym:state.acronym, aOpen, appStartDate, appEndDate}}>Create plan</Link>}
+                                {aCreate && <Link to={"/create/task"} state={{acronym:state.acronym, aCreate}} type="button" className="bg-blue-500 text-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Create Task</Link>}
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="">
-                        <h1 className="text-lg font-bold bg-sky-300 text-center">TODO</h1>
-
-                        {todo.map((task, index)=>(
-                            <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
-                                <div className="w-full h-8" style={{background:task.colour}}></div>
-                                <div class="px-6 py-4">
-                                    <div class="font-bold text-xl mb-2">{task.Task_name}</div>
-                                    <p class="text-gray-700 text-base">
-                                        ID: {task.Task_id}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Owner: {task.Task_owner}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Creator: {task.Task_creator}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Created at: {new Date(task.Task_createDate).toISOString().substr(0,10)}
-                                    </p>
-
-                                </div>
-                                <div class="px-6 pt-4 pb-2">
-                                    <div className="flex justify-between">
+    
                     
-                                        <div></div>
-                                        
-                                        {aTodo ? 
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link> 
-                                        : 
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>}
-                                        
-                                        {aTodo ? 
-                                        <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
-                                        </div></Link>
-                                        :
-                                        <div></div>
-                                        }
-                                        
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        ))}
-
-
-
-                    </div>
-
-                    <div className="">
-                        <h1 className="text-lg font-bold bg-sky-200 text-center">DOING</h1>
-                        
-                        {doing.map((task, index)=>(
-                            <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
-                                <div className="w-full h-8" style={{background:task.colour}}></div>
-                                <div class="px-6 py-4">
-                                    <div class="font-bold text-xl mb-2">{task.Task_name}</div>
-                                    <p class="text-gray-700 text-base">
-                                        ID: {task.Task_id}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Owner: {task.Task_owner}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Creator: {task.Task_creator}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Created at: {new Date(task.Task_createDate).toISOString().substr(0,10)}
-                                    </p>
-
-                                </div>
-                                <div class="px-6 pt-4 pb-2">
-                                    <div className="flex justify-between">
-                                        {aDoing ?
-                                        <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
-                                        </div></Link>
-                                        :
-                                        <div></div>
-                                        }
-                                        
-                                        {aDoing ?
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link>
-                                        :
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>
-                                        }
-                                        
-                                        {aDoing ?
-                                        <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
-                                        </div></Link>
-                                        :
-                                        <div></div>
-                                        }
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        ))}
-
-                    </div>
-
-                    <div className="">
-                        <h1 className="text-lg font-bold bg-sky-300 text-center">DONE</h1>
-
-                        {done.map((task, index)=>(
-                            <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
-                                <div className="w-full h-8" style={{background:task.colour}}></div>
-                                <div class="px-6 py-4">
-                                    <div class="font-bold text-xl mb-2">{task.Task_name}</div>
-                                    <p class="text-gray-700 text-base">
-                                        ID: {task.Task_id}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Owner: {task.Task_owner}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Creator: {task.Task_creator}
-                                    </p>
-                                    <p class="text-gray-700 text-base">
-                                        Created at: {new Date(task.Task_createDate).toISOString().substr(0,10)}
-                                    </p>
-
-                                </div>
-                                <div class="px-6 pt-4 pb-2">
-                                    <div className="flex justify-between">
-                                        {aDone ?
-                                        <Link type="button" to={""} className=""><div class="w-5 overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right"></div>
-                                        </div></Link>
-                                        :
-                                        <div></div>
-                                        }
-
-                                        {aDone ?
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >Edit</Link>
-                                        :
-                                        <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>
-                                        }
-
-                                        {aDone ?
-                                        <Link type="button" to={""} ><div class="w-5  overflow-hidden inline-block">
-                                        <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
-                                        </div></Link>
-                                        :
-                                        <div></div>
-                                        }
-                                        
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        ))}
-
-
-                    </div>
-
-                    <div className="">
-                        <h1 className="text-lg font-bold bg-sky-200 text-center">CLOSED</h1>
-
-                        {closed.map((task, index)=>(
+                    <div className="grid lg:grid-cols-5 gap-4 grid-cols-2">
+                        <div className="">
+                            <h1 className="text-lg font-bold bg-sky-200 text-center">OPEN</h1>
+                            
+    
+                            {open.map((task, index)=>(
                                 <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
                                     <div className="w-full h-8" style={{background:task.colour}}></div>
                                     <div class="px-6 py-4">
@@ -506,34 +322,203 @@ function PlanOverview() {
                                         <p class="text-gray-700 text-base">
                                             Owner: {task.Task_owner}
                                         </p>
-                                        <p class="text-gray-700 text-base">
-                                            Creator: {task.Task_creator}
-                                        </p>
-                                        <p class="text-gray-700 text-base">
-                                            Created at: {new Date(task.Task_createDate).toISOString().substr(0,10)}
-                                        </p>
-
+                                        <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
                                     </div>
                                     <div class="px-6 pt-4 pb-2">
-                                        <div className="flex justify-center">
+                                        <div className="flex justify-between">
+                                            <div></div>
+    
+                                            {aOpen ? 
+                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"edit"}}>Edit</Link> 
+                                            : 
+                                            <div></div>
+                                            }
+    
+                                            {aOpen && <Link type="button" to={"/pm-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"release"}}><div class="w-5  overflow-hidden inline-block">
+                                            <div title="RELEASE" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
+                                            </div></Link>}
                                             
-
-                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym}} >View</Link>
-
-                                         
                                         </div>
                                         
                                     </div>
                                 </div>
                             ))}
-
+    
+    
+                        </div>
+    
+                        <div className="">
+                            <h1 className="text-lg font-bold bg-sky-300 text-center">TODO</h1>
+    
+                            {todo.map((task, index)=>(
+                                <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                    <div className="w-full h-8" style={{background:task.colour}}></div>
+                                    <div class="px-6 py-4">
+                                        <div class="font-bold text-xl mb-2">{task.Task_name}</div>
+                                        <p class="text-gray-700 text-base">
+                                            ID: {task.Task_id}
+                                        </p>
+                                        <p class="text-gray-700 text-base">
+                                            Owner: {task.Task_owner}
+                                        </p>
+                                        <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
+                                    </div>
+                                    <div class="px-6 pt-4 pb-2">
+                                        <div className="flex justify-between">
+                        
+                                            <div></div>
+                                            
+                                            {aTodo ? 
+                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"edit"}} >Edit</Link> 
+                                            : 
+                                            <div></div>
+                                            }
+                                            
+                                            {aTodo ? 
+                                            <Link type="button" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"promote"}}><div class="w-5  overflow-hidden inline-block">
+                                            <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left" title="PROMOTE"></div>
+                                            </div></Link>
+                                            :
+                                            <div></div>
+                                            }
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            ))}
+    
+    
+    
+                        </div>
+    
+                        <div className="">
+                            <h1 className="text-lg font-bold bg-sky-200 text-center">DOING</h1>
+                            
+                            {doing.map((task, index)=>(
+                                <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                    <div className="w-full h-8" style={{background:task.colour}}></div>
+                                    <div class="px-6 py-4">
+                                        <div class="font-bold text-xl mb-2">{task.Task_name}</div>
+                                        <p class="text-gray-700 text-base">
+                                            ID: {task.Task_id}
+                                        </p>
+                                        <p class="text-gray-700 text-base">
+                                            Owner: {task.Task_owner}
+                                        </p>
+                                        <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
+                                    </div>
+                                    <div class="px-6 pt-4 pb-2">
+                                        <div className="flex justify-between">
+                                            {aDoing ?
+                                            <Link type="button" to={"/team-update/task"} className="" state={{taskId:task.Task_id, acronym:state.acronym, newState:"return"}}><div class="w-5 overflow-hidden inline-block">
+                                            <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right" title="RETURN"></div>
+                                            </div></Link>
+                                            :
+                                            <div></div>
+                                            }
+                                            
+                                            {aDoing ?
+                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"edit"}} >Edit</Link>
+                                            :
+                                            <div></div>
+                                            }
+                                            
+                                            {aDoing ?
+                                            <Link type="button" to={"/team-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"promote"}}><div class="w-5  overflow-hidden inline-block">
+                                            <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left" title="PROMOTE"></div>
+                                            </div></Link>
+                                            :
+                                            <div></div>
+                                            }
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            ))}
+    
+                        </div>
+    
+                        <div className="">
+                            <h1 className="text-lg font-bold bg-sky-300 text-center">DONE</h1>
+    
+                            {done.map((task, index)=>(
+                                <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                    <div className="w-full h-8" style={{background:task.colour}}></div>
+                                    <div class="px-6 py-4">
+                                        <div class="font-bold text-xl mb-2">{task.Task_name}</div>
+                                        <p class="text-gray-700 text-base">
+                                            ID: {task.Task_id}
+                                        </p>
+                                        <p class="text-gray-700 text-base">
+                                            Owner: {task.Task_owner}
+                                        </p>
+                                        <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
+                                    </div>
+                                    <div class="px-6 pt-4 pb-2">
+                                        <div className="flex justify-between">
+                                            {aDone ?
+                                            <Link type="button" to={"/pl-update/task"} className=""><div class="w-5 overflow-hidden inline-block" state={{taskId:task.Task_id, acronym:state.acronym, newState:"reject"}}>
+                                            <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right" title="REJECT"></div>
+                                            </div></Link>
+                                            :
+                                            <div></div>
+                                            }
+    
+                                            {aDone ?
+                                            <Link type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full h-10 text-center" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"edit"
+                                            }} >Edit</Link>
+                                            :
+                                            <div></div>
+                                            }
+    
+                                            {aDone ?
+                                            <Link type="button" to={"/pl-update/task"} state={{taskId:task.Task_id, acronym:state.acronym, newState:"accept"}}><div class="w-5  overflow-hidden inline-block" >
+                                            <div class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left" title="ACCEPT"></div>
+                                            </div>
+                                            </Link>
+                                            :
+                                            <div></div>
+                                            }
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            ))}
+    
+    
+                        </div>
+    
+                        <div className="">
+                            <h1 className="text-lg font-bold bg-sky-200 text-center">CLOSED</h1>
+    
+                            {closed.map((task, index)=>(
+                                    <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                        <div className="w-full h-8" style={{background:task.colour}}></div>
+                                        <div class="px-6 py-4">
+                                            <div class="font-bold text-xl mb-2">{task.Task_name}</div>
+                                            <p class="text-gray-700 text-base">
+                                                ID: {task.Task_id}
+                                            </p>
+                                            <p class="text-gray-700 text-base">
+                                                Owner: {task.Task_owner}
+                                            </p>
+                                            <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
+                                        </div>
+                                        
+                                    </div>
+                                ))}
+    
+                        </div>
+    
                     </div>
-
                 </div>
-            </div>
-            
-        </>
-     );
+                
+            </>
+         );
+    }
+
 }
 
 export default PlanOverview;
