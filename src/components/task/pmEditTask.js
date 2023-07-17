@@ -23,11 +23,6 @@ function PmEditTask() {
     const srcState = useContext(StateContext);
     const srcDispatch = useContext(DispatchContext);
 
-    //handle back
-    async function handleBack(){
-        return navigate(-1);
-    }
-
     //Variables to change
     const[taskNotes, setTaskNotes] = useState();
     const[taskPlan, setTaskPlan] = useState();
@@ -40,6 +35,11 @@ function PmEditTask() {
 
     //on load
     const[onLoad, setOnLoad] = useState(true);
+
+    //handle back
+    async function handleBack(){
+        return navigate("/plan-management", {state:{acronym:acronym}});
+    }
 
     //onSubmit
     async function onSubmit(e){
@@ -164,6 +164,7 @@ function PmEditTask() {
 
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
+                if(res.data.status == 0) navigate("/login");
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                 
             }
@@ -199,26 +200,26 @@ function PmEditTask() {
                         </div>
         
                         <form onSubmit={onSubmit}>
-                            <div class="mb-6">
-                                <label for="taskName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task name</label>
-                                <input type="text" value={thisTask.Task_name} onChange={(e)=>setTaskName(e.target.value)} id="taskName" class="bg-stone-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task name..." readOnly required />
+                            <div className="mb-6">
+                                <label for="taskName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task name</label>
+                                <input type="text" value={thisTask.Task_name} id="taskName" className="bg-stone-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task name..." readOnly required />
                             </div>
                             <div className="mb-6">
-                                <label for="desc" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task description</label>
-                                <textarea value={thisTask.Task_description}  onChange={(e)=>setTaskDescription(e.target.value)} id="desc" rows="4" class="block p-2.5 w-full text-sm text-white bg-stone-400 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task description...." readOnly></textarea>
+                                <label for="desc" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task description</label>
+                                <textarea value={thisTask.Task_description} id="desc" rows="4" className="block p-2.5 w-full text-sm text-white bg-stone-400 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task description...." readOnly></textarea>
         
                             </div>
                             <div className="mb-6">
-                                <label for="taskNotes" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task notes</label>
-                                <textarea onChange={(e)=>setTaskNotes(e.target.value)} id="taskNotes" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task notes...."></textarea>
+                                <label for="taskNotes" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task notes</label>
+                                <textarea onChange={(e)=>setTaskNotes(e.target.value)} id="taskNotes" rows="4" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task notes...."></textarea>
         
                             </div>
                             
-                            <div class="mb-6 grid lg:grid-cols-2 gap-4 grid-cols-1">
+                            <div className="mb-6 grid lg:grid-cols-2 gap-4 grid-cols-1">
                                 
                                 <div>
-                                    <label for="permitOpen" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan</label>
-                                    <select onChange={(e)=>setTaskPlan(e.target.value)}  id="permitOpen" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <label for="permitOpen" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan</label>
+                                    <select onChange={(e)=>setTaskPlan(e.target.value)}  id="permitOpen" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option value=""></option>
                                         {plans.map((plan, index)=>{
                                             if(taskPlan === plan.Plan_MVP_name){
@@ -246,32 +247,32 @@ function PmEditTask() {
                             <div>
                                 <h1 className="text-xl font-semibold">Notes history</h1>
                             </div>
-                            <div class="mb-4 md:flex md:flex-wrap md:justify-between">
-                                <div class="container w-full px-4 sm:px-8">
+                            <div className="mb-4 md:flex md:flex-wrap md:justify-between">
+                                <div className="container w-full px-4 sm:px-8">
         
-                                <div class="flex flex-col">
-                                    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                    <div class="py-2 inline-block w-full sm:px-6 lg:px-8">
+                                <div className="flex flex-col">
+                                    <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                    <div className="py-2 inline-block w-full sm:px-6 lg:px-8">
         
-                                        <div class="table-wrp block max-h-96">
-                                        <table class="w-full">
-                                            <thead class="bg-white border-b sticky top-0">
+                                        <div className="table-wrp block max-h-96">
+                                        <table className="w-full">
+                                            <thead className="bg-white border-b sticky top-0">
                                             <tr>
-                                                <th scope="col" class="text-md font-medium text-gray-900 pr-2 text-left">
+                                                <th scope="col" className="text-md font-medium text-gray-900 pr-2 text-left">
                                                 User
                                                 </th>
-                                                <th scope="col" class="text-md font-medium text-gray-900 pr-2 text-left">
+                                                <th scope="col" className="text-md font-medium text-gray-900 pr-2 text-left">
                                                 Task state
                                                 </th>
-                                                <th scope="col" class="text-md font-medium text-gray-900 text-left pr-2">
+                                                <th scope="col" className="text-md font-medium text-gray-900 text-left pr-2">
                                                 Date & Time
                                                 </th>
-                                                <th scope="col" class="text-md font-medium text-gray-900 text-left pr-2">
+                                                <th scope="col" className="text-md font-medium text-gray-900 text-left pr-2">
                                                 Notes
                                                 </th>
                                             </tr>
                                             </thead>
-                                            <tbody class="h-96 overflow-y-auto">
+                                            <tbody className="h-96 overflow-y-auto">
                                                 {historyNotes.map((note, index)=>(
                                                     <tr key={index} className="p-2">
                                                         <td className="bg-stone-100">{note[0]}</td>
@@ -302,8 +303,8 @@ function PmEditTask() {
                                         
         
                             
-                            <Link type="button" onClick={handleBack} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
-                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><span className="capitalize">{newState != "open" ? "Release" : "Edit"}</span></button>
+                            <Link type="button" to={"/plan-management"} className="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5" state={{acronym:acronym}}>Cancel</Link>
+                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><span className="capitalize">{newState != "open" ? "Release" : "Edit"}</span></button>
                         </form>
                     </div>
                     <br />

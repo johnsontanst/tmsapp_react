@@ -32,7 +32,7 @@ function EditApp() {
         e.preventDefault();
         console.log(acronym, description, rnumber, startDate, endDate, create, open, toDo, doing, done);
         try{
-            const result = await Axios.post('http://localhost:3000/update/application',{acronym, description, endDate, permitCreate:create, permitOpen:open, permitTodo:toDo, permitDoing:doing, permitDone:done}, {withCredentials:true});
+            const result = await Axios.post('http://localhost:3000/update/application',{acronym, description, endDate, permitCreate:create, permitOpen:open, permitTodo:toDo, permitDoing:doing, permitDone:done, un:srcState.username, gn:"project leader"}, {withCredentials:true});
             console.log(result);
             if(result.data.success){
                 srcDispatch({type:"flashMessage", value:"application updated"});
@@ -66,7 +66,7 @@ function EditApp() {
                 srcDispatch({type:"flashMessage", value:"Application acronym exist"});
             }
             else{
-                srcDispatch({type:"flashMessage", value:"Create application error"});
+                srcDispatch({type:"flashMessage", value:"Update application error"});
             }
         }
     }
@@ -104,7 +104,7 @@ function EditApp() {
     async function getGroups(){
         try{
             //Get all groups
-            const groupResult = await Axios.post('http://localhost:3000/allgroups', {un:srcState.username, gn:"admin"}, {withCredentials:true});
+            const groupResult = await Axios.post('http://localhost:3000/allgroups', {un:srcState.username, gn:"project leader"}, {withCredentials:true});
 
             //Set groups
             if(groupResult.data.success){
@@ -127,9 +127,7 @@ function EditApp() {
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-                if(!await res.data.groups.includes("project leader")){
-                    navigate("/");
-                }
+                
             }
         }
         getUserInfo();

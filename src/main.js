@@ -38,6 +38,7 @@ import MyProfile from "./components/profile/myProfileComponent";
 
 
 function MainComponent(){
+    const navigate = useNavigate();
     const [logoutRedirect, setLogoutRedirect] = useState(false);
 
     //initState
@@ -105,6 +106,8 @@ function MainComponent(){
         //Set useState logIn to false
         dispatch({type:"logout"});
 
+        //redirect to login
+        //navigate("/login")
 
     }
 
@@ -115,6 +118,7 @@ function MainComponent(){
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
                 if(res.data.status == 0) logoutFunc();
+                console.log("userstatus", res.data.status)
                 dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
                 
             }

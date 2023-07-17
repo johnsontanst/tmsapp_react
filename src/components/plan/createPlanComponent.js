@@ -26,7 +26,7 @@ function CreatePlan() {
 
     //Navigate to previous page
     async function backPrev(){
-      return navigate(-1);
+      return navigate("/plan-management", {state:{acronym:acronym}});
     }
 
     //handle submit
@@ -118,6 +118,7 @@ function CreatePlan() {
           //Get user info
           const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
           if(res.data.success){
+            if(res.data.status == 0) navigate("/login");
               srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
               setAcronym(state.acronym);
               //Set app start date and end date
@@ -144,29 +145,29 @@ function CreatePlan() {
           </div>
           <form onSubmit={onSubmit}>
               <div class="mb-6">
-                  <label for="planName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan name</label>
-                  <input type="text" onChange={(e)=>setPlanName(e.target.value)} id="planName" pattern="^[a-zA-Z0-9_ ]+$" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Plan name (No special charcters)" required />
+                  <label for="planName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan name</label>
+                  <input type="text" onChange={(e)=>setPlanName(e.target.value)} id="planName" pattern="^[a-zA-Z0-9_ ]+$" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Plan name (No special charcters)" required />
               </div>
-              <div class="mb-6 grid lg:grid-cols-3 gap-4 grid-cols-1">
+              <div className="mb-6 grid lg:grid-cols-3 gap-4 grid-cols-1">
                   <div>
-                      <label for="startdate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan start date</label>
-                      <input type="date" min={new Date().toISOString().substr(0,10)} max={appEndDate} id="startdate" onChange={(e)=>setPlanStartDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                      <p className="text-sm">Application start date: {appStartDate}</p>
+                      <label for="startdate" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan start date</label>
+                      <input type="date" min={appStartDate} max={appEndDate} id="startdate" onChange={(e)=>setPlanStartDate(e.target.value)} placeholder="mm/dd/yyyy" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                      <p className="text-sm">Application start date: {appStartDate} </p>
                   </div>
                   <div>
-                      <label for="enddate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan end date</label>
+                      <label for="enddate" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan end date</label>
                       <input type="date" min={planStartDate} max={appEndDate} id="enddate" onChange={(e)=>setPlanEndDate(e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                       <p className="text-sm">Application start date: {appEndDate}</p>
                   </div>
                   <div>
-                    <label for="planColour" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan colour</label>
+                    <label for="planColour" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan colour</label>
                     <input type="color" onChange={(e)=>setPlanColour(e.target.value)} id="planColour" className="w-full h-11"required />
                   </div>
                   
               </div>
 
-              <button type="button" onClick={backPrev} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</button>
-              <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+              <button type="button" onClick={backPrev} className="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</button>
+              <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
           </form>
       </div>
     </>

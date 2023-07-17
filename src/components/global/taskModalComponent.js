@@ -22,15 +22,15 @@ const TaskModal = (props) => {
 
     return (
       <>
-        <button type="button" class="bg-fuchsia-500 text-white active:bg-fuchsia-600 font-bold uppercase text-xs px-4 py-2 rounded-full shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 w-full" onClick={() => setShowModal(true)}>View more</button>
+        <button type="button" class="bg-fuchsia-500 text-white active:bg-fuchsia-600 font-bold uppercase text-xs px-4 py-1 rounded-full shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 w-full hover:bg-fuchsia-700" onClick={() => setShowModal(true)}>View more</button>
         
         {showModal ? (
         <>
           <div
             key={props.index}
-            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none mt-8"
+            className="justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none mt-2"
           >
-            <div className="relative w-auto my-6 mx-auto max-w-3xl">
+            <div className="relative w-auto my-5 mx-auto max-w-3xl">
               {/*content*/}
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 {/*header*/}

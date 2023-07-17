@@ -77,11 +77,6 @@ function CreateTask() {
         }
     }
 
-    //HandlePrev
-    async function handlePrev(e){
-        return navigate(-1, {state:{acronym:acronym}});
-    }
-
     //Get plans by acronym
     async function getPlans(){
         try{
@@ -120,8 +115,9 @@ function CreateTask() {
 
             //Get user info
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-            console.log(res)
+            //console.log(res)
             if(res.data.success){
+                if(res.data.status == 0) navigate("/login");
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                 if(!await res.data.groups.includes("project leader")){
                     navigate("/");
@@ -148,8 +144,8 @@ function CreateTask() {
                     <h1 className="text-xl font-bold">Create task</h1>
                 </div>
                 <form onSubmit={onSubmit}>
-                    <div class="mb-6">
-                        <label for="taskName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task name</label>
+                    <div className="mb-6">
+                        <label for="taskName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task name</label>
                         <input type="text" onChange={(e)=>setTaskName(e.target.value)} id="taskName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task name..." required />
                     </div>
                     <div className="mb-6">
@@ -163,10 +159,10 @@ function CreateTask() {
 
                     </div>
                     
-                    <div class="mb-6 grid lg:grid-cols-2 gap-4 grid-cols-1">
+                    <div className="mb-6 grid lg:grid-cols-2 gap-4 grid-cols-1">
                         
                         <div>
-                            <label for="plans" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan</label>
+                            <label for="plans" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Plan</label>
                             <select onChange={(e)=>setTaskPlan(e.target.value)}  id="plans" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 <option value=""></option>
                                 {plans.map((plan, index)=>(
@@ -186,8 +182,8 @@ function CreateTask() {
                         
                     </div>
 
-                    <Link type="button" onClick={handlePrev} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
-                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create</button>
+                    <Link type="button" to={"/plan-management"} className="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5" state={{acronym:acronym}}>Cancel</Link>
+                    <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create</button>
                 </form>
             </div>
         </>

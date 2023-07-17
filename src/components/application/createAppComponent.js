@@ -39,7 +39,7 @@ function CreateApp() {
         //console.log(acronym, description, rnumber, startDate, endDate, open, toDo, doing, done);
         try{
             const result = await Axios.post('http://localhost:3000/create-application',{acronym, description, rnumber, startDate, endDate, open, toDo, doing, done, un:srcState.username, gn:"project leader", create}, {withCredentials:true});
-            console.log(result.data.success);
+            //console.log(result.data.success);
             if(result.data.success){
                 //clear all fields 
                 setAcronym("");
@@ -66,8 +66,7 @@ function CreateApp() {
             }
         }
         catch(err){
-            console.log(err);
-            //console.log(err.response.data.message);
+            console.log(err.response);
             if(err.response.data.message === "invalid end date"){
                 srcDispatch({type:"flashMessage", value:"Invalid end date"});
             }
@@ -92,6 +91,9 @@ function CreateApp() {
             else if(err.response.data.message.code === "ER_DUP_ENTRY"){
                 srcDispatch({type:"flashMessage", value:"Application acronym exist"});
             }
+            else if(err.response.data.message.message === "not authorized"){
+                srcDispatch({type:"flashMessage", value:"Not authorized"});
+            }
             else{
                 srcDispatch({type:"flashMessage", value:"Create application error"});
             }
@@ -102,7 +104,7 @@ function CreateApp() {
     //Get groups
     async function getGroups(){
         try{
-            const groupResult = await Axios.post('http://localhost:3000/allgroups', {un:srcState.username, gn:"admin"}, {withCredentials:true});
+            const groupResult = await Axios.post('http://localhost:3000/allgroups', {un:srcState.username, gn:"project leader"}, {withCredentials:true});
             if(groupResult.data.success){
                 setGroups(groupResult.data.groups);
             }
@@ -124,6 +126,7 @@ function CreateApp() {
             const getUserInfo = async()=>{
                 const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
                 if(res.data.success){
+                    if(res.data.status == 0) navigate("/login");
                     srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
                     setLoadGroup(true);
                     if(!await res.data.groups.includes("project leader")){
@@ -148,7 +151,7 @@ function CreateApp() {
 
     return ( 
         <>
-            <div className="container mx-auto mt-5">
+            <div className="container mx-auto mt-5 p-5">
                 <div className="mb-4">
                     <h1 className="text-xl font-bold">Create application</h1>
                 </div>

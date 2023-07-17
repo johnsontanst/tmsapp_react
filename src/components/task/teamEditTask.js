@@ -1,6 +1,6 @@
 //ACCEPT/REJECT TASK, ADD TASK TO NEW PLAN, ADD NOTES
 
-import React, { useEffect, useContext, useReducer, useState } from "react"
+import React, { useEffect, useContext, useReducer, useState, version } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Axios from "axios";
 
@@ -24,11 +24,6 @@ function TeamEditTask() {
     const srcState = useContext(StateContext);
     const srcDispatch = useContext(DispatchContext);
 
-    //handle back
-    async function handleBack(){
-        return navigate(-1);
-    }
-
     //Variables to change
     const[taskNotes, setTaskNotes] = useState();
     const[taskPlan, setTaskPlan] = useState();
@@ -43,6 +38,10 @@ function TeamEditTask() {
     //onload
     const [onLoad, setOnLoad] = useState(true);
 
+    //handle back
+    async function handleBack(){
+        return navigate("/plan-management", {state:{acronym:acronym}});
+    }
     //onSubmit
     async function onSubmit(e){
         e.preventDefault();
@@ -51,15 +50,15 @@ function TeamEditTask() {
             let gn;
 
             //Get group for check group
-            if(newState === "todo"){
+            if(verbState === "promote" && newState === "doing"){
                 gn = permit_g.data.apps[0].App_permit_toDoList;
             }
             else{
-                gn = permit_g.data.apps[0].App_permit_Doing
+                console.log("done state", permit_g.data.apps[0].App_permit_Doing)
+                gn = permit_g.data.apps[0].App_permit_Doing;
             }
-            console.log(gn)
             const result = await Axios.post("http://localhost:3000/team-update/task", {taskId:thisTask.Task_id, un:srcState.username, gn, userNotes:taskNotes, taskState:newState, acronym:thisTask.Task_app_Acronym, taskPlan}, {withCredentials:true});
-            console.log(result);
+
             if(result.data.success){
                 srcDispatch({type:"flashMessage", value:"Task updated"});
                 return navigate(-1);
@@ -123,12 +122,15 @@ function TeamEditTask() {
                 }
                 setVerbState(state.newState);
 
+                //Set acronym 
+                setAcronym(state.acronym)
+
                 //Set onLoad false
                 setOnLoad(false);
             }
         }
         catch(err){
-            console.log(err);
+            //console.log(err);
             srcDispatch({type:"flashMessage", value:"Error in find task"});
         }
     }
@@ -144,7 +146,7 @@ function TeamEditTask() {
             
         }
         catch(e){
-            console.log(e)
+            //console.log(e)
             //srcDispatch({type:"flashMessage", value:"Error in getting groups"});
         }
     }
@@ -173,19 +175,18 @@ function TeamEditTask() {
 
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
             if(res.data.success){
+                if(res.data.status == 0) navigate("/login");
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-                if(!await res.data.groups.includes("project leader")){
-                    navigate("/");
-                }
+
             }
         }
         getUserInfo();
-        getTask();
     }, [])
 
     useEffect(()=>{
         if(srcState.username != "nil"){
             getPlans();
+            getTask();
         }
     },[srcState.username])
 
@@ -206,11 +207,11 @@ function TeamEditTask() {
                         <form onSubmit={onSubmit}>
                             <div class="mb-6">
                                 <label for="taskName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task name</label>
-                                <input type="text" value={thisTask.Task_name} onChange={(e)=>setTaskName(e.target.value)} id="taskName" class="bg-stone-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task name..." readOnly required />
+                                <input type="text" value={thisTask.Task_name} id="taskName" class="bg-stone-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task name..." readOnly required />
                             </div>
                             <div className="mb-6">
                                 <label for="desc" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Task description</label>
-                                <textarea value={thisTask.Task_description}  onChange={(e)=>setTaskDescription(e.target.value)} id="desc" rows="4" class="block p-2.5 w-full text-sm text-white bg-stone-400 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task description...." readOnly></textarea>
+                                <textarea value={thisTask.Task_description} id="desc" rows="4" class="block p-2.5 w-full text-sm text-white bg-stone-400 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Task description...." readOnly></textarea>
         
                             </div>
                             <div className="mb-6">
@@ -307,7 +308,7 @@ function TeamEditTask() {
                                         
         
                             
-                            <Link type="button" onClick={handleBack} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5">Cancel</Link>
+                            <Link type="button" to={"/plan-management"} class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-blue-800 mr-5" state={{acronym:acronym}}>Cancel</Link>
                             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><span className="capitalize">{verbState}</span></button>
                         </form>
                     </div>
