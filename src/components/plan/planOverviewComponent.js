@@ -303,7 +303,9 @@ function PlanOverview() {
                                 <div className="overflow-y-auto">
                                     <select multiple={true} className="flex w-32">
                                         {plan.map((pl, index)=>(
-                                            <option key={index} style={{background:pl.colour}} className="text-white" onClick={() => displaySEdate(pl.Plan_startDate, pl.Plan_endDate, pl.colour)}>{pl.Plan_MVP_name}</option>
+                                            //<span>
+                                                <option key={index} style={{borderLeft: '5px solid', borderLeftColor:pl.colour}}className="text-sm" onClick={() => displaySEdate(pl.Plan_startDate, pl.Plan_endDate, pl.colour)}>{pl.Plan_MVP_name}</option>
+                                            //</span> 
                                         ))}                                 
                                     </select>
                                 </div>
@@ -327,12 +329,14 @@ function PlanOverview() {
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
                                         <div className="font-bold text-lg mb-1">{task.Task_name}</div>
-                                        <p className="text-gray-700 text-sm">
-                                            ID: {task.Task_id}
-                                        </p>
-                                        <p className="text-gray-700 text-sm">
-                                            Owner: {task.Task_owner}
-                                        </p>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700 text-sm">
+                                                <span className="font-bold">ID:</span> {task.Task_id}
+                                            </span>
+                                            <span className="text-gray-700 text-sm">
+                                               <span className="font-bold">Owner:</span> {task.Task_owner}
+                                            </span>
+                                        </div>
                                         <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
                                     </div>
                                     <div className="px-3 pt-1 pb-1">
@@ -366,12 +370,14 @@ function PlanOverview() {
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
                                         <div className="font-bold text-lg mb-1">{task.Task_name}</div>
-                                        <p className="text-gray-700 text-sm">
-                                            ID: {task.Task_id}
-                                        </p>
-                                        <p className="text-gray-700 text-sm">
-                                            Owner: {task.Task_owner}
-                                        </p>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700 text-sm">
+                                                <span className="font-bold">ID:</span> {task.Task_id}
+                                            </span>
+                                            <span className="text-gray-700 text-sm">
+                                               <span className="font-bold">Owner:</span> {task.Task_owner}
+                                            </span>
+                                        </div>
                                         <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
                                     </div>
                                     <div class="px-3 pt-1 pb-1">
@@ -406,12 +412,14 @@ function PlanOverview() {
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
                                         <div className="font-bold text-lg mb-1">{task.Task_name}</div>
-                                        <p className="text-gray-700 text-sm">
-                                            ID: {task.Task_id}
-                                        </p>
-                                        <p className="text-gray-700 text-sm">
-                                            Owner: {task.Task_owner}
-                                        </p>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700 text-sm">
+                                                <span className="font-bold">ID:</span> {task.Task_id}
+                                            </span>
+                                            <span className="text-gray-700 text-sm">
+                                               <span className="font-bold">Owner:</span> {task.Task_owner}
+                                            </span>
+                                        </div>
                                         <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
                                     </div>
                                     <div class="px-3 pt-1 pb-1">
@@ -450,12 +458,14 @@ function PlanOverview() {
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
                                         <div className="font-bold text-lg mb-1">{task.Task_name}</div>
-                                        <p className="text-gray-700 text-sm">
-                                            ID: {task.Task_id}
-                                        </p>
-                                        <p className="text-gray-700 text-sm">
-                                            Owner: {task.Task_owner}
-                                        </p>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-700 text-sm">
+                                                <span className="font-bold">ID:</span> {task.Task_id}
+                                            </span>
+                                            <span className="text-gray-700 text-sm">
+                                               <span className="font-bold">Owner:</span> {task.Task_owner}
+                                            </span>
+                                        </div>
                                         <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
                                     </div>
                                     <div class="px-3 pt-1 pb-1">
@@ -495,12 +505,14 @@ function PlanOverview() {
                                         <div className="w-full h-5" style={{background:task.colour}}></div>
                                         <div class="px-6 py-1">
                                             <div className="font-bold text-xl mb-1">{task.Task_name}</div>
-                                            <p className="text-gray-700 text-sm">
-                                                ID: {task.Task_id}
-                                            </p>
-                                            <p className="text-gray-700 text-sm">
-                                                Owner: {task.Task_owner}
-                                            </p>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-700 text-sm">
+                                                    <span className="font-bold">ID:</span> {task.Task_id}
+                                                </span>
+                                                <span className="text-gray-700 text-sm">
+                                                <span className="font-bold">Owner:</span> {task.Task_owner}
+                                                </span>
+                                            </div>
                                             <div><TaskModal Task_name={task.Task_name} Task_description={task.Task_description} Task_notes={task.Task_notes} Task_id={task.Task_id} Task_plan={task.Task_plan} Task_app_Acronym={task.Task_app_Acronym} Task_state={task.Task_state} Task_creator={task.Task_creator} Task_owner={task.Task_owner} Task_createDate={task.Task_createDate}/></div>
                                         </div>
                                         

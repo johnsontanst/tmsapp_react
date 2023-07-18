@@ -13,7 +13,7 @@ const TaskModal = (props) => {
     if(props.Task_notes){
       //Re-arranging the history notes
       var tempHistory = String(props.Task_notes).split("||");
-      console.log(tempHistory[0])
+      tempHistory = tempHistory.reverse()
       for(const k in tempHistory){
           setHistoryNotes(setHistoryNotes=>[...setHistoryNotes, String(tempHistory[k]).split("|")]);
       }

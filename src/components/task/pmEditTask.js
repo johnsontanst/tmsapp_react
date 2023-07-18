@@ -99,7 +99,8 @@ function PmEditTask() {
 
                 //Re-arranging the history notes
                 var tempHistory = String(taskResult.data.task[0].Task_notes).split("||");
-
+                tempHistory = tempHistory.reverse()
+                
                 for(const k in tempHistory){
                     setHistoryNotes(setHistoryNotes=>[...setHistoryNotes, String(tempHistory[k]).split("|")]);
                 }
@@ -235,7 +236,7 @@ function PmEditTask() {
                                 <div>
                                     <p><span className="text-md font-semibold">Application acronym: </span>{thisTask.Task_app_Acronym}</p>
                                     <p><span className="text-md font-semibold">Create date: </span>{new Date().toISOString().substr(0,10)}</p>
-                                    <p><span className="text-md font-semibold">Task creator </span>{srcState.username}</p>
+                                    <p><span className="text-md font-semibold">Task creator </span>{thisTask.Task_creator}</p>
                                     <p><span className="text-md font-semibold">Task owner: </span>{thisTask.Task_owner}</p>
                                     <p><span className="text-md font-semibold">Current task state: </span>{thisTask.Task_state}</p>
                                 </div>

@@ -14,7 +14,7 @@ const Modal = (props) => {
         <>
           <div
             key={props.index}
-            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+            className="justify-center items-center overflow-x-auto overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
           >
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               {/*content*/}
@@ -34,8 +34,8 @@ const Modal = (props) => {
                   </button>
                 </div>
                 {/*body*/}
-                <div className="relative p-6 flex-auto">
-                  <p className="my-4 text-slate-500 text-lg leading-relaxed">
+                <div className="p-6"  >
+                  <p className="my-4 text-slate-800 text-sm" style={{wordWrap:"break-word"}}>
                     {props.description}
                   </p>
                 </div>

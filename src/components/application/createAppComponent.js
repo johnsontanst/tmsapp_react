@@ -66,7 +66,7 @@ function CreateApp() {
             }
         }
         catch(err){
-            console.log(err.response);
+            console.log(err.response.data.message);
             if(err.response.data.message === "invalid end date"){
                 srcDispatch({type:"flashMessage", value:"Invalid end date"});
             }
@@ -91,7 +91,7 @@ function CreateApp() {
             else if(err.response.data.message.code === "ER_DUP_ENTRY"){
                 srcDispatch({type:"flashMessage", value:"Application acronym exist"});
             }
-            else if(err.response.data.message.message === "not authorized"){
+            else if(err.response.data.message === "not authorized"){
                 srcDispatch({type:"flashMessage", value:"Not authorized"});
             }
             else{

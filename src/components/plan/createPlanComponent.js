@@ -55,7 +55,7 @@ function CreatePlan() {
       }
       catch(err){
 
-        console.log(err)
+        //console.log(err.response.data.err.code)
         if(err.response.data.message === "missing input"){
           srcDispatch({type:"flashMessage", value:"Missing input"});
         }
@@ -71,6 +71,9 @@ function CreatePlan() {
         else if(err.response.data.message === "not authorized"){
           srcDispatch({type:"flashMessage", value:"Not authorized"});
           navigate(-1);
+        }
+        else if(err.response.data.err.code === "ER_DUP_ENTRY"){
+          srcDispatch({type:"flashMessage", value:"Plan name exist"});
         }
         else{
           srcDispatch({type:"flashMessage", value:"Create plan error"});

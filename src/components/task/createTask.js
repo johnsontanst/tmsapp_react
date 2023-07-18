@@ -70,7 +70,7 @@ function CreateTask() {
         
         //get app 
         const appResult = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym},{withCredentials:true});
-        console.log(appResult);
+        //console.log(appResult);
         if(!appResult.data.success){
             srcDispatch({type:"flashMessage", value:"Invalid app acronym"});
             navigate(-1);
@@ -112,6 +112,9 @@ function CreateTask() {
             if(!state.aCreate || state.aCreate == null){
                 return navigate("/")
             }
+            if(state.acronym == null){
+                return navigate("/")
+            }
 
             //Get user info
             const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
@@ -119,8 +122,12 @@ function CreateTask() {
             if(res.data.success){
                 if(res.data.status == 0) navigate("/login");
                 srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-                if(!await res.data.groups.includes("project leader")){
-                    navigate("/");
+                const checkOpenPermit = await Axios.post("http://localhost:3000/get-application", {acronym:state.acronym}, {withCredentials:true})
+                if(checkOpenPermit.length < 0 ){
+                    navigate("/")
+                }
+                if(!res.data.groups.includes(checkOpenPermit.data.apps[0].App_permit_Create)){
+                    navigate("/")
                 }
             }
             else{
