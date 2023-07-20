@@ -325,10 +325,13 @@ function PlanOverview() {
                             
     
                             {open.map((task, index)=>(
-                                <div class="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                <div class="w-full overflow-hidden shadow-lg mt-3 border">
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
-                                        <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                        <div className="flex justify-between">
+                                            <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                            <div><span className="font-bold text-sm">Plan: </span>{task.Task_plan ? task.Task_plan : "No plan"}</div>
+                                        </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-700 text-sm">
                                                 <span className="font-bold">ID:</span> {task.Task_id}
@@ -366,10 +369,13 @@ function PlanOverview() {
                             <h1 className="text-lg font-bold bg-sky-300 text-center">TODO</h1>
     
                             {todo.map((task, index)=>(
-                                <div className="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                <div className="w-full overflow-hidden shadow-lg mt-3 border">
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
-                                        <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                        <div className="flex justify-between">
+                                            <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                            <div><span className="font-bold text-sm">Plan: </span>{task.Task_plan ? task.Task_plan : "No plan"}</div>
+                                        </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-700 text-sm">
                                                 <span className="font-bold">ID:</span> {task.Task_id}
@@ -408,10 +414,13 @@ function PlanOverview() {
                             <h1 className="text-lg font-bold bg-sky-200 text-center">DOING</h1>
                             
                             {doing.map((task, index)=>(
-                                <div className="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                <div className="w-full overflow-hidden shadow-lg mt-3 border">
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
-                                        <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                        <div className="flex justify-between">
+                                            <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                            <div><span className="font-bold text-sm">Plan: </span>{task.Task_plan ? task.Task_plan : "No plan"}</div>
+                                        </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-700 text-sm">
                                                 <span className="font-bold">ID:</span> {task.Task_id}
@@ -454,10 +463,13 @@ function PlanOverview() {
                             <h1 className="text-lg font-bold bg-sky-300 text-center">DONE</h1>
     
                             {done.map((task, index)=>(
-                                <div className="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                <div className="w-full overflow-hidden shadow-lg mt-3 border">
                                     <div className="w-full h-5" style={{background:task.colour}}></div>
                                     <div className="px-6 py-1">
-                                        <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                        <div className="flex justify-between">
+                                            <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                            <div><span className="font-bold text-sm">Plan: </span>{task.Task_plan ? task.Task_plan : "No plan"}</div>
+                                        </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-700 text-sm">
                                                 <span className="font-bold">ID:</span> {task.Task_id}
@@ -501,10 +513,13 @@ function PlanOverview() {
                             <h1 className="text-lg font-bold bg-sky-200 text-center">CLOSED</h1>
     
                             {closed.map((task, index)=>(
-                                    <div className="max-w-sm overflow-hidden shadow-lg mt-5 border">
+                                    <div className="w-full overflow-hidden shadow-lg mt-3 border">
                                         <div className="w-full h-5" style={{background:task.colour}}></div>
                                         <div class="px-6 py-1">
-                                            <div className="font-bold text-xl mb-1">{task.Task_name}</div>
+                                            <div className="flex justify-between">
+                                                <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                                                <div><span className="font-bold text-sm">Plan: </span>{task.Task_plan ? task.Task_plan : "No plan"}</div>
+                                            </div>
                                             <div className="flex justify-between">
                                                 <span className="text-gray-700 text-sm">
                                                     <span className="font-bold">ID:</span> {task.Task_id}
