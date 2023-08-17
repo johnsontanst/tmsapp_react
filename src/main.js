@@ -99,10 +99,37 @@ function MainComponent() {
     //Set useState logIn to false
     dispatch({ type: "logout" })
 
-    //redirect to login
-    //navigate("/login")
-  }
+        //redirect to login
+        //navigate("/login")
 
+    }
+
+    //useEffect
+    useEffect(()=>{
+        const getUserInfo = async()=>{
+            
+            try{
+                const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
+                console.log("hello", res);
+                if(res.data.success){
+                    if(res.data.status == 0) logoutFunc();
+                    //console.log("userstatus", res.data.status)
+                    dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
+                    
+                }
+                else{
+                    dispatch({type:"logout"})
+                }
+            }
+            catch(e){
+                //console.log(e.response.status);
+                // if(e.response.status == 403){
+                    
+                // }
+            }
+        }
+        getUserInfo();
+    }, [])
   //useEffect
   useEffect(() => {
     const getUserInfo = async () => {

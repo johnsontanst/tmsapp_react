@@ -53,14 +53,13 @@ function CreateAccount() {
     }
   }
 
-  //Get all groups
-  async function getAllgroups() {
-    const res = await Axios.post("http://localhost:8080/getUserGroup", {}, { withCredentials: true })
-    console.log(res)
-    // if(res.data.success){
-    //   setAllGroups(res.data.groups);
-    // }
-  }
+    //Get all groups
+    async function getAllgroups(){
+      const res = await Axios.post("http://localhost:8080/getAllGroups",{un:srcState.username, gn:"admin"},{withCredentials:true});
+      console.log(res.data);
+      setAllGroups(res.data);
+
+    }
 
   //update selected group onChange
   function handleGroupChange(tt) {
@@ -162,19 +161,10 @@ function CreateAccount() {
           </select>
         </div>
         <div className="relative z-0 w-full mb-6 group">
-          <label for="groups_multiple" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Select group/s
-          </label>
-          <select
-            multiple
-            onChange={handleGroupChange}
-            id="groups_multiple"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            {allGroups.map((group, index) => (
-              <option key={index} value={group.groupName}>
-                {group.groupName}
-              </option>
+          <label for="groups_multiple" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select group/s</label>
+          <select multiple onChange={handleGroupChange} id="groups_multiple" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            {allGroups.map((group, index)=>(
+              <option key={index} value={group}>{group}</option>
             ))}
           </select>
         </div>
