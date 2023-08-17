@@ -18,11 +18,10 @@ function LoginForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     try{
-      await Axios.post('http://localhost:3000/login', {username, password}, {withCredentials: true}).then((data)=>{
+      await Axios.post('http://localhost:8080/login', {username:username, password:password}, {withCredentials: true}).then((data)=>{
         if(data.data.success){
-          console.log(data.data)
-          console.log(data.data.groups.includes("project leader"))
-          srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin"), isPL:data.data.groups.includes("project leader")});
+          // console.log(data.data.accgroups.some(obj => Object.values(obj).includes("project leader")))
+          srcDispatch({type:"login", value:data.data, admin:data.data.accgroups.some(obj => Object.values(obj).includes("admin")), isPL:data.data.accgroups.some(obj => Object.values(obj).includes("project leader"))});
           return navigate("/");
         }
         else{
@@ -48,10 +47,10 @@ function LoginForm() {
   useEffect(()=>{
     const getUserInfo = async()=>{
       try{
-          const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+          const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
           if(res.data.success){
               if(res.data.status == 0) logoutFunc();
-              dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+              dispatch({type:"login", value:res.data, admin:res.data.accgroups.some(obj => Object.values(obj).includes("admin")), isPl:res.data.accgroups.some(obj => Object.values(obj).includes("project leader"))});
               
           }
       }

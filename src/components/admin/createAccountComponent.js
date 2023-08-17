@@ -60,10 +60,11 @@ function CreateAccount() {
 
     //Get all groups
     async function getAllgroups(){
-      const res = await Axios.post("http://localhost:3000/allgroups",{un:srcState.username, gn:"admin"},{withCredentials:true});
-        if(res.data.success){
-          setAllGroups(res.data.groups);
-        }
+      const res = await Axios.post("http://localhost:8080/getUserGroup",{},{withCredentials:true});
+      console.log(res);
+        // if(res.data.success){
+        //   setAllGroups(res.data.groups);
+        // }
     }
 
     //update selected group onChange
@@ -77,18 +78,18 @@ function CreateAccount() {
 
     //useEffect
     useEffect(()=>{
-      const getUserInfo = async()=>{
-        const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
-        if(res.data.success){
-            srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-            if(!await res.data.groups.includes("admin")){
-              return navigate("/")
-            }
-        }else{
-          return navigate("/")
-        }
-      }
-      getUserInfo();
+      // const getUserInfo = async()=>{
+      //   const res = await Axios.post("http://localhost:3000/authtoken/return/userinfo", {},{withCredentials:true});
+      //   if(res.data.success){
+      //       srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
+      //       if(!await res.data.groups.includes("admin")){
+      //         return navigate("/")
+      //       }
+      //   }else{
+      //     return navigate("/")
+      //   }
+      // }
+      // getUserInfo();
         
     }, []);
 

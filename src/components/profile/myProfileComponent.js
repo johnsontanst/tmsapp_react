@@ -21,12 +21,13 @@ function MyProfile() {
 
     async function getProfile(){
         try{
-            const res = await Axios.post('http://localhost:3000/profile', {authTokenC:localStorage.getItem('authToken')}, {withCredentials:true});
-            if(res.data.success){
-                setUsername(res.data.username);
-                setEmail(res.data.email);
-                setGroups(res.data.groups);
-            }
+            const res = await Axios.post('http://localhost:8080/profile', {}, {withCredentials:true});
+            console.log(res);
+            // if(res.data.success){
+            //     setUsername(res.data.username);
+            //     setEmail(res.data.email);
+            //     setGroups(res.data.groups);
+            // }
         }
         catch(e){
             console.log(e);
@@ -37,7 +38,7 @@ function MyProfile() {
     async function updateProfile(e){
         e.preventDefault();
         try{
-            const res = await Axios.post('http://localhost:3000/update/user', {username, password, oldPassword, email},{withCredentials: true});
+            const res = await Axios.post('http://localhost:8080/update/user', {username, password, oldPassword, email},{withCredentials: true});
             if(res.data.success){
                 srcDispatch({type:"flashMessage", value:"profile updated"});
                 
