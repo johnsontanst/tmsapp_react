@@ -36,33 +36,33 @@ function AccountsOverview() {
         }
     }
 
+    async function getUserInfo(){
+      console.log(srcState.logIn);
+    }
+
     useEffect(()=>{
-      // const getUserInfo = async()=>{
-      //   try{
-      //     const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
-      //     console.log(res.data.groups.includes("admin"));
-      //     if(res.data.success){
-      //       srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
-      //       if(!res.data.groups.includes("admin")){
-      //         return navigate("/")
-      //       }
-      //     }
-      //     else{
-      //       return navigate("/")
-      //     }
-      //   }
-      //   catch(e){
-      //     srcDispatch({type:"flashMessage", value:"Error getting users"});
-      //     return navigate("/")
-      //   }
-      // }
+      const getUserInfo = async()=>{
+        try{
+          //const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
+          console.log(srcState.logIn);
+          
+        }
+        catch(e){
+          srcDispatch({type:"flashMessage", value:"Error getting users"});
+          return navigate("/")
+        }
+      }
       
-      // getUserInfo();
+      getUserInfo();
     }, [])
 
     useEffect(()=>{
       if(srcState.isAdmin) getAllUsers();
     },[srcState.isAdmin])
+
+    useEffect(()=>{
+      if(srcState.logIn) getUserInfo();
+    },[srcState.logIn])
 
     if(isLoading){
       return(

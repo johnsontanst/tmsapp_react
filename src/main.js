@@ -116,6 +116,7 @@ function MainComponent(){
             
             try{
                 const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
+                console.log("hello", res);
                 if(res.data.success){
                     if(res.data.status == 0) logoutFunc();
                     //console.log("userstatus", res.data.status)

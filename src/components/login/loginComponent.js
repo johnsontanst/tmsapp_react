@@ -19,9 +19,10 @@ function LoginForm() {
     e.preventDefault();
     try{
       await Axios.post('http://localhost:8080/login', {username:username, password:password}, {withCredentials: true}).then((data)=>{
-        if(data.data.success){
+      console.log(data);  
+      if(data.data.success){
           // console.log(data.data.accgroups.some(obj => Object.values(obj).includes("project leader")))
-          srcDispatch({type:"login", value:data.data, admin:data.data.accgroups.some(obj => Object.values(obj).includes("admin")), isPL:data.data.accgroups.some(obj => Object.values(obj).includes("project leader"))});
+          srcDispatch({type:"login", value:data.data, admin:data.data.groups.includes("admin"), isPL:data.data.groups.includes("project leader")});
           return navigate("/");
         }
         else{
