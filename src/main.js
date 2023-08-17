@@ -48,7 +48,8 @@ function MainComponent(){
         group: [],
         isAdmin : false,
         isPL: false,
-        ableToAccessApp: true
+        ableToAccessApp: true,
+        testLoginComplete: false
     }
 
 
@@ -78,6 +79,9 @@ function MainComponent(){
             case "toogleAdmin":
                 if(draft.isAdmin == true) draft.isAdmin = false
                 else draft.isAdmin = true
+                return
+            case "testLogin":
+                draft.testLoginComplete = true;
                 return
         }
     }
@@ -116,11 +120,12 @@ function MainComponent(){
             
             try{
                 const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
-                console.log("hello", res);
+                console.log("test login done success");
                 if(res.data.success){
                     if(res.data.status == 0) logoutFunc();
                     //console.log("userstatus", res.data.status)
                     dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
+                    dispatch({type:"testLogin"});
                     
                 }
                 else{
@@ -132,6 +137,8 @@ function MainComponent(){
                 // if(e.response.status == 403){
                     
                 // }
+                console.log("test login done but got error");
+                dispatch({type:"testLogin"});
             }
         }
         getUserInfo();

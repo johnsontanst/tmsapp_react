@@ -21,11 +21,11 @@ function CreateGroup() {
     //Handle Submit
     async function handleSubmit(e){
       e.preventDefault();
-      console.log(formGroup)
       try{
-        const res = await Axios.post("http://localhost:8080/register/group", {groupName:formGroup, un:srcState.username, gn:"admin"}, {withCredentials:true});
-        if(res.data.success){
+        const res = await Axios.post("http://localhost:8080/createAccGroup", {groupName:formGroup, un:srcState.username, gn:"admin"}, {withCredentials:true});
+        if(res.data){
           srcDispatch({type:"flashMessage", value:"Group created"});
+          setFormGroup("test");
           getAllGroups();
         }
       }
@@ -37,10 +37,9 @@ function CreateGroup() {
     //Get all groups
     async function getAllGroups(){
         try{
-            const res = await Axios.post("http://localhost:8080/allgroups", {un:srcState.username, gn:"admin"}, {withCredentials:true});
-            if(res.data.success){
-                setAllGroups(res.data.groups);
-            }
+            const res = await Axios.post("http://localhost:8080/getAllGroups", {un:srcState.username, gn:"admin"}, {withCredentials:true});
+            setAllGroups(res.data);
+
         }
         catch(e){
             srcDispatch({type:"flashMessage", value:"Error in getting users"});
@@ -63,7 +62,7 @@ function CreateGroup() {
             <span className="text-md block">All groups</span>
             <select multiple size={3} id="allgroups" className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-60 p-2.5">
                 {allGroups.map((group, index)=>(
-                    <option key={index}>{group.groupName}</option>
+                    <option key={index}>{group}</option>
                 ))}
             </select>
             
