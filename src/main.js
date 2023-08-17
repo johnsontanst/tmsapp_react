@@ -139,26 +139,6 @@ function MainComponent() {
         }
         getUserInfo();
     }, [])
-  //useEffect
-  useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-        if (res.data.success) {
-          if (res.data.status == 0) logoutFunc()
-          //console.log("userstatus", res.data.status)
-          dispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin"), isPL: res.data.groups.includes("project leader") })
-        } else {
-          dispatch({ type: "logout" })
-        }
-      } catch (e) {
-        //console.log(e.response.status);
-        // if(e.response.status == 403){
-        // }
-      }
-    }
-    getUserInfo()
-  }, [])
 
   return (
     <StateContext.Provider value={state}>
@@ -190,11 +170,11 @@ function MainComponent() {
       </DispatchContext.Provider>
     </StateContext.Provider>
   )
-
-
-    const root = ReactDomClient.createRoot(document.querySelector("#app"))
-    root.render(<MainComponent />)
 }
+
+  const root = ReactDomClient.createRoot(document.querySelector("#app"))
+  root.render(<MainComponent />)
+
 
 if (module.hot) {
   module.hot.accept();
