@@ -21,13 +21,15 @@ function MyProfile() {
 
   async function getProfile() {
     try {
-      const res = await Axios.post("http://localhost:8080/api/accounts/getUserProfile", {}, { withCredentials: true })
+      const res = await Axios.post("http://localhost:8080/api/accounts/getUserProfile", { un: srcState.username }, { withCredentials: true })
       console.log(res)
-      // if(res.data.success){
-      //     setUsername(res.data.username);
-      //     setEmail(res.data.email);
-      //     setGroups(res.data.groups);
-      // }
+      if (res.data.success) {
+        setUsername(res.data.username)
+        setEmail(res.data.email)
+        if (res.data.groups.length != 0) {
+          setGroups(res.data.groups)
+        }
+      }
     } catch (e) {
       console.log(e)
       srcDispatch({ type: "flashMessage", value: "Error in getting profile" })
@@ -107,7 +109,7 @@ function MyProfile() {
             <div class="mt-2">
               {groups.map((g, index) => (
                 <span key={index} class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                  {g.groupName}
+                  {g}
                 </span>
               ))}
             </div>
