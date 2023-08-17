@@ -69,21 +69,17 @@ function CreateAccount() {
     setGroups(updatedOptions)
   }
 
-  //useEffect
-  useEffect(() => {
-    // const getUserInfo = async()=>{
-    //   const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
-    //   if(res.data.success){
-    //       srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin")});
-    //       if(!await res.data.groups.includes("admin")){
-    //         return navigate("/")
-    //       }
-    //   }else{
-    //     return navigate("/")
-    //   }
-    // }
-    // getUserInfo();
-  }, [])
+  async function authorization(){
+    console.log(srcState.isAdmin == false)
+    if(srcState.isAdmin == false || srcState.logIn == false){
+      navigate("/")
+    }
+  }
+
+    //useEffect
+    useEffect(()=>{
+      if(srcState.testLoginComplete) authorization();
+    },[srcState.testLoginComplete])
 
   useEffect(() => {
     if (srcState.isAdmin) getAllgroups()

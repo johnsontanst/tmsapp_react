@@ -17,19 +17,20 @@ function CreateGroup() {
   const srcDispatch = useContext(DispatchContext)
   const navigate = useNavigate()
 
-  //Handle Submit
-  async function handleSubmit(e) {
-    e.preventDefault()
-    console.log(formGroup)
-    try {
-      const res = await Axios.post("http://localhost:8080/createUserGroup", { groupName: formGroup, un: srcState.username, gn: "admin" }, { withCredentials: true })
-      if (res.data.success) {
-        srcDispatch({ type: "flashMessage", value: "Group created" })
-        getAllGroups()
+    //Handle Submit
+    async function handleSubmit(e){
+      e.preventDefault();
+      try{
+        const res = await Axios.post("http://localhost:8080/createAccGroup", {groupName:formGroup, un:srcState.username, gn:"admin"}, {withCredentials:true});
+        if(res.data){
+          srcDispatch({type:"flashMessage", value:"Group created"});
+          setFormGroup("test");
+          getAllGroups();
+        }
       }
-    } catch (e) {
-      srcDispatch({ type: "flashMessage", value: "Error in creating group" })
-    }
+      catch (e) {
+        srcDispatch({ type: "flashMessage", value: "Error in creating group" })
+      }
   }
 
   //Get all groups
