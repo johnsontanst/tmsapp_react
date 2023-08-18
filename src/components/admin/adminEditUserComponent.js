@@ -100,13 +100,12 @@ function AdminEditUser() {
       var newpassword
       if (password === undefined) {
         newpassword = null
-      }
-      else{
+      } else {
         newpassword = password
       }
       const res = await Axios.put(
         "http://localhost:8080/api/accounts/admin/update",
-        { account: { username, password:newpassword, groups, email, status }, un: srcState.username, gn: "admin" },
+        { account: { username, password: newpassword, groups, email, status }, un: srcState.username, gn: "admin" },
         { withCredentials: true }
       )
       console.log(res)
@@ -118,10 +117,10 @@ function AdminEditUser() {
       srcDispatch({ type: "flashMessage", value: "Error in updating profile" })
     }
   }
-  
-  async function authorization(){
+
+  async function authorization() {
     console.log(srcState.isAdmin == false)
-    if(srcState.isAdmin == false || srcState.logIn == false){
+    if (srcState.isAdmin == false || srcState.logIn == false) {
       navigate("/")
     }
   }
@@ -143,9 +142,9 @@ function AdminEditUser() {
     getUserInfo()
   }, [])
 
-  useEffect(()=>{
-    if(srcState.testLoginComplete) authorization();
-  },[srcState.testLoginComplete])
+  useEffect(() => {
+    if (srcState.testLoginComplete) authorization()
+  }, [srcState.testLoginComplete])
 
   return (
     <>
