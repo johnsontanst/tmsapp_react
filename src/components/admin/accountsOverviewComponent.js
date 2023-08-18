@@ -37,8 +37,8 @@ function AccountsOverview() {
     }
 
     async function authorization(){
-      console.log(srcState.isAdmin == false)
       if(srcState.isAdmin == false || srcState.logIn == false){
+        srcDispatch({type:"flashMessage", value:"Unauthorized"});
         navigate("/")
       }
     }

@@ -112,30 +112,41 @@ function CreateApp() {
 
   //useEffect
   useEffect(() => {
-    try {
-      const getUserInfo = async () => {
-        const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-        if (res.data.success) {
-          if (res.data.status == 0) navigate("/login")
-          srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-          setLoadGroup(true)
-          if (!(await res.data.groups.includes("project leader"))) {
-            srcDispatch({ type: "flashMessage", value: "Not authorized" })
-            navigate("/")
-          }
-        } else {
-          navigate("/")
-        }
-      }
-      getUserInfo()
-    } catch (err) {
-      console.log(err)
-    }
+    // try {
+    //   const getUserInfo = async () => {
+    //     const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
+    //     if (res.data.success) {
+    //       if (res.data.status == 0) navigate("/login")
+    //       srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
+    //       setLoadGroup(true)
+    //       if (!(await res.data.groups.includes("project leader"))) {
+    //         srcDispatch({ type: "flashMessage", value: "Not authorized" })
+    //         navigate("/")
+    //       }
+    //     } else {
+    //       navigate("/")
+    //     }
+    //   }
+    //   getUserInfo()
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }, [])
+
+  async function authorization(){
+    if(srcState.isPL == false || srcState.logIn == false){
+      srcDispatch({type:"flashMessage", value:"Unauthorized"});
+      navigate("/")
+    }
+  }
 
   useEffect(() => {
     getGroups()
   }, [loadGroup])
+
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   return (
     <>
