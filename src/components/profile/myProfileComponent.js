@@ -10,8 +10,8 @@ function MyProfile() {
   const [username, setUsername] = useState()
   const [email, setEmail] = useState()
   const [groups, setGroups] = useState([])
-  const [password, setPassword] = useState()
-  const [oldPassword, setOldPassword] = useState()
+  const [newPassword, setPassword] = useState()
+  const [verifyPassword, setOldPassword] = useState()
 
   //context
   const srcState = useContext(StateContext)
@@ -39,11 +39,17 @@ function MyProfile() {
   async function updateProfile(e) {
     e.preventDefault()
     try {
-      const res = await Axios.post("http://localhost:8080/api/accounts/updateAccount", { username, password, oldPassword, email }, { withCredentials: true })
-      if (res.data.success) {
-        srcDispatch({ type: "flashMessage", value: "profile updated" })
-
-        return navigate("/")
+      if (verifyPassword === undefined) {
+        srcDispatch({ type: "flashMessage", value: "Please enter old password for verification" })
+      } else {
+        const res = await Axios.put("http://localhost:8080/api/accounts/updateAccount", { username, newPassword, verifyPassword, email }, { withCredentials: true })
+        if (res.data.success) {
+          srcDispatch({ type: "flashMessage", value: "profile updated" })
+          return navigate("/")
+        }
+        else{
+          srcDispatch({ type: "flashMessage", value: res.data.message})
+        }
       }
     } catch (e) {
       if (e.response.data.message === "invalid password verification") {
@@ -60,12 +66,12 @@ function MyProfile() {
     }
   }
 
-  async function authorization(){
-    if(srcState.logIn == false){
-      srcDispatch({type:"flashMessage", value:"please login"});
+  async function authorization() {
+    if (srcState.logIn == false) {
+      srcDispatch({ type: "flashMessage", value: "please login" })
       navigate("/login")
     }
-    getProfile();
+    getProfile()
   }
 
   useEffect(() => {
@@ -82,9 +88,9 @@ function MyProfile() {
     // getUserInfo()
   }, [])
 
-  useEffect(()=>{
-    if(srcState.testLoginComplete) authorization();
-  },[srcState.testLoginComplete])
+  useEffect(() => {
+    if (srcState.testLoginComplete) authorization()
+  }, [srcState.testLoginComplete])
 
   return (
     <>
