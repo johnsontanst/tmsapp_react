@@ -30,9 +30,13 @@ function AdminEditUser() {
   }
 
   function handleGroupChange(tt) {
-    const updatedOptions = [...tt.target.options].filter(option => option.selected).map(x => x.value)
-    console.log(updatedOptions)
-
+    // console.log(tt.target.options.selected.value.groupName,"123")
+    const updatedOptions = [...tt.target.options]
+      .filter(option => option.selected)
+      .map(x => ({
+        groupName: x.value
+      }))
+    console.log(updatedOptions, "this")
     setGroups(updatedOptions)
   }
 
@@ -46,13 +50,20 @@ function AdminEditUser() {
         setEmail(res.data.email)
         setStatus(res.data.status)
         //Set user groups
-        if (res.data.groups.length != 0) {
-          setGroups(res.data.groups)
-        }
+        console.log(res.data.groups)
 
+        if (res.data.groups.length != 0) {
+          const test = res.data.groups.map(x => ({
+            groupName: x
+          }))
+          setGroups(test)
+        }
         //Set all groups
         if (allgroups.data.groups.length != 0) {
-          setallgroups(allgroups.data.groups)
+          const test = allgroups.data.groups.map(x => ({
+            groupName: x
+          }))
+          setallgroups(test)
         }
 
         //disable active/disable option if user is admin
@@ -85,7 +96,19 @@ function AdminEditUser() {
       return
     }
     try {
-      const res = await Axios.post("http://localhost:8080/api/accounts/admin/update", { username, password, groups, email, status, un: srcState.username, gn: "admin" }, { withCredentials: true })
+      console.log(password, "hey")
+      var newpassword
+      if (password === undefined) {
+        newpassword = null
+      } else {
+        newpassword = password
+      }
+      const res = await Axios.put(
+        "http://localhost:8080/api/accounts/admin/update",
+        { account: { username, password: newpassword, groups, email, status }, un: srcState.username, gn: "admin" },
+        { withCredentials: true }
+      )
+      console.log(res)
       if (res.data.success) {
         srcDispatch({ type: "flashMessage", value: "profile updated" })
         return navigate("/user-management")
@@ -94,10 +117,10 @@ function AdminEditUser() {
       srcDispatch({ type: "flashMessage", value: "Error in updating profile" })
     }
   }
-  
-  async function authorization(){
+
+  async function authorization() {
     console.log(srcState.isAdmin == false)
-    if(srcState.isAdmin == false || srcState.logIn == false){
+    if (srcState.isAdmin == false || srcState.logIn == false) {
       navigate("/")
     }
   }
@@ -119,9 +142,9 @@ function AdminEditUser() {
     getUserInfo()
   }, [])
 
-  useEffect(()=>{
-    if(srcState.testLoginComplete) authorization();
-  },[srcState.testLoginComplete])
+  useEffect(() => {
+    if (srcState.testLoginComplete) authorization()
+  }, [srcState.testLoginComplete])
 
   return (
     <>
@@ -158,9 +181,9 @@ function AdminEditUser() {
             <label htmlFor="groups" className="block mt-5">
               Groups
             </label>
-            <select multiple={true} value={groups} onChange={handleGroupChange} id="groups" name="groups">
+            <select multiple={true} value={groups.groupName} onChange={handleGroupChange} id="groups" name="groups">
               {allgroups.map(group => (
-                <option value={group}>{group}</option>
+                <option value={group.groupName}>{group.groupName}</option>
               ))}
             </select>
 
