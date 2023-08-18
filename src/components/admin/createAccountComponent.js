@@ -23,7 +23,7 @@ function CreateAccount() {
   async function handleSubmit(e) {
     e.preventDefault()
     try {
-      const res = await Axios.post("http://localhost:8080/api/accounts/create", { username, password, email, groups, un: srcState.username, gn: "admin", status }, { withCredentials: true })
+      const res = await Axios.post("http://localhost:8080/api/accounts/create", { account: {username, password, email, status, groups}, un: srcState.username, gn: "admin", status }, { withCredentials: true })
       if (res.data.success) {
         srcDispatch({ type: "flashMessage", value: "account created" })
         //Reset useState fields and reset input fields
@@ -57,13 +57,14 @@ function CreateAccount() {
     async function getAllgroups(){
       const res = await Axios.post("http://localhost:8080/getAllGroups",{un:srcState.username, gn:"admin"},{withCredentials:true});
       console.log(res.data);
-      setAllGroups(res.data);
-
+      if(res.data.groups) {
+        setAllGroups(res.data.groups);
+      }
     }
 
   //update selected group onChange
   function handleGroupChange(tt) {
-    const updatedOptions = [...tt.target.options].filter(option => option.selected).map(x => x.value)
+    const updatedOptions = [...tt.target.options].filter(option => option.selected).map(x => ({"groupName": x.value}))
     console.log(updatedOptions)
 
     setGroups(updatedOptions)
