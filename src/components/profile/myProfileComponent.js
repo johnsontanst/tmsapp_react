@@ -60,19 +60,31 @@ function MyProfile() {
     }
   }
 
-  useEffect(() => {
-    const getUserInfo = async () => {
-      const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-      if (res.data.success) {
-        srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-        getProfile()
-      } else {
-        srcDispatch({ type: "flashMessage", value: "Please login.." })
-        navigate("/login")
-      }
+  async function authorization(){
+    if(srcState.logIn == false){
+      srcDispatch({type:"flashMessage", value:"please login"});
+      navigate("/login")
     }
-    getUserInfo()
+    getProfile();
+  }
+
+  useEffect(() => {
+    // const getUserInfo = async () => {
+    //   const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
+    //   if (res.data.success) {
+    //     srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
+    //     getProfile()
+    //   } else {
+    //     srcDispatch({ type: "flashMessage", value: "Please login.." })
+    //     navigate("/login")
+    //   }
+    // }
+    // getUserInfo()
   }, [])
+
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   return (
     <>

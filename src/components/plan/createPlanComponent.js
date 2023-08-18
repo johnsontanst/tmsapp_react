@@ -83,7 +83,7 @@ function CreatePlan() {
     }
 
     //get app
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
     if (!appResult.data.success) {
       srcDispatch({ type: "flashMessage", value: "Invalid app acronym" })
       navigate(-1)
@@ -95,36 +95,51 @@ function CreatePlan() {
   const srcState = useContext(StateContext)
   const srcDispatch = useContext(DispatchContext)
 
+  async function authorization(){
+    if(srcState.logIn == false){
+      srcDispatch({type:"flashMessage", value:"Unauthorized"});
+      navigate("/")
+    }
+    if(state == null || !state.aOpen || state.aOpen == null || !state.appStartDate || state.appStartDate == null ||!state.appEndDate || state.appEndDate == null){
+      return navigate(-1)
+    }
+
+    setAcronym(state.acronym)
+    //Set app start date and end date
+    setAppStartDate(state.appStartDate)
+    setAppEndDate(state.appEndDate)
+  }
+
   //useEffect
   useEffect(() => {
-    const getUserInfo = async () => {
-      //Check if state is null
-      if (state == null) {
-        return navigate(-1)
-      }
-      if (!state.aOpen || state.aOpen == null) {
-        return navigate(-1)
-      }
-      if (!state.appStartDate || state.appStartDate == null) {
-        return navigate(-1)
-      }
-      if (!state.appEndDate || state.appEndDate == null) {
-        return navigate(-1)
-      }
-      //Get user info
-      const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-      if (res.data.success) {
-        if (res.data.status == 0) navigate("/login")
-        srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-        setAcronym(state.acronym)
-        //Set app start date and end date
-        setAppStartDate(state.appStartDate)
-        setAppEndDate(state.appEndDate)
-      } else {
-        navigate("/")
-      }
-    }
-    getUserInfo()
+    // const getUserInfo = async () => {
+    //   //Check if state is null
+    //   if (state == null) {
+    //     return navigate(-1)
+    //   }
+    //   if (!state.aOpen || state.aOpen == null) {
+    //     return navigate(-1)
+    //   }
+    //   if (!state.appStartDate || state.appStartDate == null) {
+    //     return navigate(-1)
+    //   }
+    //   if (!state.appEndDate || state.appEndDate == null) {
+    //     return navigate(-1)
+    //   }
+    //   //Get user info
+    //   const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
+    //   if (res.data.success) {
+    //     if (res.data.status == 0) navigate("/login")
+    //     srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
+    //     setAcronym(state.acronym)
+    //     //Set app start date and end date
+    //     setAppStartDate(state.appStartDate)
+    //     setAppEndDate(state.appEndDate)
+    //   } else {
+    //     navigate("/")
+    //   }
+    // }
+    // getUserInfo()
   }, [])
 
   useEffect(() => {
@@ -132,6 +147,10 @@ function CreatePlan() {
       checkApp()
     }
   }, [srcState.username])
+
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   return (
     <>

@@ -44,7 +44,7 @@ function TeamEditTask() {
   async function onSubmit(e) {
     e.preventDefault()
     try {
-      var permit_g = await Axios.post("http://localhost:8080/get-application", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
+      var permit_g = await Axios.post("http://localhost:8080/getApplication", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
       let gn
 
       //Get group for check group

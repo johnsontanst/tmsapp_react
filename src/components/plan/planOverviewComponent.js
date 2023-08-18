@@ -55,49 +55,49 @@ function PlanOverview() {
   //Set authroization
   async function setAuthorization() {
     //Get application
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
 
     if (appResult.data.success) {
-      //Check if current user got permission for create
-      if (appResult.data.apps[0].App_permit_Create != null) {
+      // Check if current user got permission for create
+      if (appResult.data.application.app_permit_Create != null) {
         //Checkgroup
-        let createR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.apps[0].App_permit_Create })
+        let createR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.application.app_permit_Create }, {withCredentials: true})
         if (createR.data.cgResult) {
           setACreate(true)
         }
       }
 
       //Check if current user got permission for open
-      if (appResult.data.apps[0].App_permit_Open != null) {
+      if (appResult.data.application.app_permit_Open != null) {
         //Checkgroup
-        let OpenR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.apps[0].App_permit_Open })
+        let OpenR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.application.app_permit_Open }, {withCredentials: true})
         if (OpenR.data.cgResult) {
           setAOpen(true)
         }
       }
 
       //Check if current user got permission for todo
-      if (appResult.data.apps[0].App_permit_toDoList != null) {
+      if (appResult.data.application.app_permit_toDoList != null) {
         //Checkgroup
-        let todoR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.apps[0].App_permit_toDoList })
+        let todoR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.application.app_permit_toDoList }, {withCredentials: true})
         if (todoR.data.cgResult) {
           setATodo(true)
         }
       }
 
       //Check if current user got permission for doing
-      if (appResult.data.apps[0].App_permit_Doing != null) {
+      if (appResult.data.application.app_permit_Doing != null) {
         //Checkgroup
-        let doingR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.apps[0].App_permit_Doing })
+        let doingR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.application.app_permit_Doing }, {withCredentials: true})
         if (doingR.data.cgResult) {
           setADoing(true)
         }
       }
 
       //Check if current user got permission for done
-      if (appResult.data.apps[0].App_permit_Done != null) {
+      if (appResult.data.application.app_permit_Done != null) {
         //Checkgroup
-        let doneR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.apps[0].App_permit_Done })
+        let doneR = await Axios.post("http://localhost:8080/cg", { un: srcState.username, gn: appResult.data.application.app_permit_Done }, {withCredentials: true})
         if (doneR.data.cgResult) {
           setADone(true)
         }
@@ -116,28 +116,32 @@ function PlanOverview() {
     }
 
     //Axios get app
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
     if (appResult.data.success) {
-      setAppStartDate(new Date(appResult.data.apps[0].App_startDate).toISOString().substr(0, 10))
-      setAppEndDate(new Date(appResult.data.apps[0].App_endDate).toISOString().substr(0, 10))
-      setAcronym(appResult.data.apps[0].App_Acronym)
+      setAppStartDate(new Date(appResult.data.application.app_startDate).toISOString().substr(0, 10))
+      setAppEndDate(new Date(appResult.data.application.app_endDate).toISOString().substr(0, 10))
+      setAcronym(appResult.data.application.app_Acronym)
     }
 
     //Axios get plan by app acronym
-    const planResult = await Axios.post("http://localhost:8080/all-plan/app", { app_Acronym: state.acronym }, { withCredentials: true })
+    const planResult = await Axios.post("http://localhost:8080/all-plan/app", { appAcronym: state.acronym }, { withCredentials: true })
     //console.log(planResult)
+    console.log("planResult", planResult.data.plans);
     if (planResult.data.success) {
       setPlan(planResult.data.plans)
     }
 
     //Axios get task by app acronym
-    const taskResult = await Axios.post("http://localhost:8080/all-task/app", { app_Acronym: state.acronym }, { withCredentials: true })
+    const taskResult = await Axios.post("http://localhost:8080/all-task/app", { appAcronym: state.acronym }, { withCredentials: true })
+    console.log("taskResults", Object.values(taskResult.data.tasks))
+    
     if (taskResult.data.success) {
       //Set onload to false
       setOnLoad(false)
       //console.log(taskResult.data.tasks);
       //re-arrange tasks into different state
-      for (const k in taskResult.data.tasks) {
+      for (let k in Object.values(taskResult.data.tasks)) {
+        console.log(k)
         if (taskResult.data.tasks[k].Task_state === "open") {
           //Get the colour of the task based on the plan and append to the array
           if (taskResult.data.tasks[k].Task_plan) {
@@ -241,6 +245,7 @@ function PlanOverview() {
   }, [])
 
   useEffect(() => {
+    console.log("acronym: ", acronym)
     if (acronym != undefined) {
       getApp()
     }
@@ -286,9 +291,9 @@ function PlanOverview() {
                         key={index}
                         style={{ borderLeft: "5px solid", borderLeftColor: pl.colour }}
                         className="text-sm"
-                        onClick={() => displaySEdate(pl.Plan_startDate, pl.Plan_endDate, pl.colour)}
+                        onClick={() => displaySEdate(pl.plan_startDate, pl.plan_endDate, pl.colour)}
                       >
-                        {pl.Plan_MVP_name}
+                        {pl.plan_MVP_name}
                       </option>
                       //</span>
                     ))}
