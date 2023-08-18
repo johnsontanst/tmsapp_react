@@ -40,38 +40,33 @@ function AdminEditUser() {
     try {
       console.log(username)
       const res = await Axios.post("http://localhost:8080/api/accounts/admin/getUserProfile", { username, un: srcState.username, gn: "admin" }, { withCredentials: true })
-      if (res.data.success) {
+      const allgroups = await Axios.post("http://localhost:8080/getAllGroups", { un: srcState.username, gn: "admin" }, { withCredentials: true })
+      if (res.data.success && allgroups.data.success) {
         setUsername(res.data.username)
         setEmail(res.data.email)
         setStatus(res.data.status)
         //Set user groups
         if (res.data.groups.length != 0) {
-          const tempGroups = []
-          for (let i = 0; i < res.data.groups.length; i++) {
-            tempGroups.push(res.data.groups[i].groupName)
-          }
-          setGroups(tempGroups)
+          setGroups(res.data.groups)
         }
 
         //Set all groups
-        if (res.data.allgroups.length != 0) {
-          const tempGroups = []
-          for (let i = 0; i < res.data.allgroups.length; i++) {
-            tempGroups.push(res.data.allgroups[i].groupName)
-          }
-          setallgroups(tempGroups)
+        if (allgroups.data.groups.length != 0) {
+          setallgroups(allgroups.data.groups)
         }
 
         //disable active/disable option if user is admin
         if (res.data.username === "admin") {
           document.querySelector('select[id="selectstatus"] option[value="0"]').disabled = true
-          if (srcState.username != "admin") {
-            document.getElementById("email").readOnly = true
-            document.getElementById("email").className = "rounded shadow border bg-stone-500 opacity-75"
-            document.getElementById("password").readOnly = true
-            document.getElementById("password").className = "rounded shadow border bg-stone-500 opacity-75"
-          }
+          // if (srcState.username != "admin") {
+          //   document.getElementById("email").readOnly = true
+          //   document.getElementById("email").className = "rounded shadow border bg-stone-500 opacity-75"
+          //   document.getElementById("password").readOnly = true
+          //   document.getElementById("password").className = "rounded shadow border bg-stone-500 opacity-75"
+          // }
         }
+      } else {
+        srcDispatch({ type: "flashMessage", value: "Error in getting user profile" })
       }
     } catch (e) {
       console.log(e)
