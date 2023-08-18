@@ -23,7 +23,7 @@ function AccountsOverview() {
     async function getAllUsers(){
         try{
             const res = await Axios.post('http://localhost:8080/api/accounts/getAllAccounts', {un:srcState.username, gn:"admin"}, {withCredentials: true})
-            console.log(res.data.accounts);
+            //console.log(res.data.accounts);
             if(res.data.success){
                 setUsers(res.data.accounts);
                 //setGroups(res.data.groups);
@@ -36,33 +36,20 @@ function AccountsOverview() {
         }
     }
 
-    async function getUserInfo(){
-      console.log(srcState.logIn);
-    }
-
-    useEffect(()=>{
-      const getUserInfo = async()=>{
-        try{
-          //const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
-          console.log(srcState.logIn);
-          
-        }
-        catch(e){
-          srcDispatch({type:"flashMessage", value:"Error getting users"});
-          return navigate("/")
-        }
+    async function authorization(){
+      console.log(srcState.isAdmin == false)
+      if(srcState.isAdmin == false || srcState.logIn == false){
+        navigate("/")
       }
-      
-      getUserInfo();
-    }, [])
+    }
 
     useEffect(()=>{
       if(srcState.isAdmin) getAllUsers();
     },[srcState.isAdmin])
 
     useEffect(()=>{
-      if(srcState.logIn) getUserInfo();
-    },[srcState.logIn])
+      if(srcState.testLoginComplete) authorization();
+    },[srcState.testLoginComplete])
 
     if(isLoading){
       return(

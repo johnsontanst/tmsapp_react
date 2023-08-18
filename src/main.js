@@ -37,67 +37,73 @@ import MyProfile from "./components/profile/myProfileComponent"
 function MainComponent() {
   const [logoutRedirect, setLogoutRedirect] = useState(false)
 
-  //initState
-  const initialState = {
-    logIn: false,
-    flashMessage: [],
-    username: "nil",
-    group: [],
-    isAdmin: false,
-    isPL: false,
-    ableToAccessApp: true
-  }
-
-  function mainReducer(draft, action) {
-    switch (action.type) {
-      case "login":
-        draft.logIn = true
-        draft.username = action.value.username
-        draft.isAdmin = action.admin
-        draft.group = action.value.groups
-        draft.isPL = action.isPL
-        draft.ableToAccessApp = action.value.planAssoisated
-        return
-      case "logout":
-        draft.logIn = false
-        draft.isAdmin = false
-        draft.isPL = false
-        draft.isPM = false
-        draft.isDev = false
-        return
-      case "flashMessage":
-        draft.flashMessage.push(action.value)
-        return
-      case "removeFlashMessage":
-        draft.flashMessage = []
-        return
-      case "toogleAdmin":
-        if (draft.isAdmin == true) draft.isAdmin = false
-        else draft.isAdmin = true
-        return
+    //initState
+    const initialState ={
+        logIn: false,
+        flashMessage : [],
+        username: "nil",
+        group: [],
+        isAdmin : false,
+        isPL: false,
+        ableToAccessApp: true,
+        testLoginComplete: false
     }
-  }
 
   //Reducer
   const [state, dispatch] = useImmerReducer(mainReducer, initialState)
 
-  //Logout
-  async function logoutFunc() {
-    const logoutResult = await Axios.post("http://localhost:8080/logout", {}, { withCredentials: true })
-    if (logoutResult.data.success) {
-      //Clear localstorage
-      localStorage.clear()
-
-      //Set useState logIn to false
-      dispatch({ type: "logout" })
-
-      localStorage.removeItem("authToken")
+    function mainReducer(draft, action){
+        switch(action.type){
+            case"login":
+                draft.logIn = true;
+                draft.username = action.value.username
+                draft.isAdmin = action.admin
+                draft.group = action.value.groups
+                draft.isPL = action.isPL
+                draft.ableToAccessApp = action.value.planAssoisated
+                return
+            case"logout":
+                draft.logIn = false
+                draft.isAdmin = false
+                draft.isPL = false
+                draft.isPM = false
+                draft.isDev = false
+                return
+            case "flashMessage":                
+                draft.flashMessage.push(action.value);
+                return
+            case "removeFlashMessage":
+                draft.flashMessage = []
+                return
+            case "toogleAdmin":
+                if(draft.isAdmin == true) draft.isAdmin = false
+                else draft.isAdmin = true
+                return
+            case "testLogin":
+                draft.testLoginComplete = true;
+                return
+        }
     }
-    //Clear localstorage
-    localStorage.clear()
 
-    //Set useState logIn to false
-    dispatch({ type: "logout" })
+    //Logout
+    async function logoutFunc(){
+
+        const logoutResult = await Axios.post("http://localhost:8080/logout", {}, {withCredentials: true});
+        if(logoutResult.data.success){
+        //Clear localstorage
+        localStorage.clear();
+
+        //Set useState logIn to false
+        dispatch({type:"logout"});
+
+        localStorage.removeItem('authToken');
+
+        }
+        //Clear localstorage
+        localStorage.clear();
+
+        //Set useState logIn to false
+        dispatch({type:"logout"});
 
         //redirect to login
         //navigate("/login")
@@ -110,11 +116,12 @@ function MainComponent() {
             
             try{
                 const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
-                console.log("hello", res);
+                console.log("test login done success");
                 if(res.data.success){
                     if(res.data.status == 0) logoutFunc();
                     //console.log("userstatus", res.data.status)
                     dispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
+                    dispatch({type:"testLogin"});
                     
                 }
                 else{
@@ -126,30 +133,12 @@ function MainComponent() {
                 // if(e.response.status == 403){
                     
                 // }
+                console.log("test login done but got error");
+                dispatch({type:"testLogin"});
             }
         }
         getUserInfo();
     }, [])
-  //useEffect
-  useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-        if (res.data.success) {
-          if (res.data.status == 0) logoutFunc()
-          //console.log("userstatus", res.data.status)
-          dispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin"), isPL: res.data.groups.includes("project leader") })
-        } else {
-          dispatch({ type: "logout" })
-        }
-      } catch (e) {
-        //console.log(e.response.status);
-        // if(e.response.status == 403){
-        // }
-      }
-    }
-    getUserInfo()
-  }, [])
 
   return (
     <StateContext.Provider value={state}>
@@ -183,9 +172,10 @@ function MainComponent() {
   )
 }
 
-const root = ReactDomClient.createRoot(document.querySelector("#app"))
-root.render(<MainComponent />)
+  const root = ReactDomClient.createRoot(document.querySelector("#app"))
+  root.render(<MainComponent />)
+
 
 if (module.hot) {
-  module.hot.accept()
+  module.hot.accept();
 }

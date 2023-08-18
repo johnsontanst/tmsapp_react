@@ -17,45 +17,52 @@ function AppOverview() {
   //useState fields
   const [applications, setApps] = useState([])
 
-  //Get application
-  async function getApplication() {
-    try {
-      const appResult = await Axios.post("http://localhost:8080/all-application", { un: srcState.username }, { withCredentials: true })
-      if (appResult.data.success) {
-        setApps(appResult.data.apps)
-      } else {
-        srcDispatch({ type: "flashMessage", value: "Error in getting groups" })
-      }
-    } catch (e) {
-      console.log(e)
-      //srcDispatch({type:"flashMessage", value:"Error in getting groups"});
+    //Get application
+    async function getApplication(){
+        try{
+            const appResult = await Axios.post('http://localhost:8080/all-application', {un:srcState.username}, {withCredentials:true});
+            if(appResult.data.success){
+                setApps(appResult.data.apps);
+
+            }
+            else{
+                srcDispatch({type:"flashMessage", value:"Error in getting groups"});
+            }
+        }
+        catch(e){
+            console.log(e)
+            //srcDispatch({type:"flashMessage", value:"Error in getting groups"});
+        }
     }
-  }
+
 
   //context
   const srcState = useContext(StateContext)
   const srcDispatch = useContext(DispatchContext)
 
-  //useEffect
-  useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-        if (res.data.success) {
-          if (res.data.status == 0) navigate("/login")
-          srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin"), isPL: res.data.groups.includes("project leader") })
-        } else {
-          navigate("/")
+    //useEffect
+    useEffect(()=>{
+        const getUserInfo = async()=>{
+            try{
+                const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {},{withCredentials:true});
+                if(res.data.success){
+                    if(res.data.status == 0) navigate("/login");
+                    srcDispatch({type:"login", value:res.data, admin:res.data.groups.includes("admin"), isPL:res.data.groups.includes("project leader")});
+                    
+                }
+                else{
+                    navigate("/")
+                }
+            }
+            catch(err){
+                if(err.response.data.message === "invalid token"){
+                    srcDispatch({type:"flashMessage", value:"Please login first.."})
+                    navigate("/login")
+                }
+                navigate("/login")
+            }
         }
-      } catch (err) {
-        if (err.response.data.message === "invalid token") {
-          srcDispatch({ type: "flashMessage", value: "Please login first.." })
-          navigate("/login")
-        }
-        navigate("/login")
-      }
-    }
-    getUserInfo()
+        getUserInfo()  
   }, [])
 
   useEffect(() => {
