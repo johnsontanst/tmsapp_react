@@ -55,7 +55,8 @@ function PlanOverview() {
   //Set authroization
   async function setAuthorization() {
     //Get application
-    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/get-application", { appAcronym: state.acronym }, { withCredentials: true })
+    console.log(appResult);
 
     if (appResult.data.success) {
       // Check if current user got permission for create
@@ -116,7 +117,7 @@ function PlanOverview() {
     }
 
     //Axios get app
-    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/get-application", { appAcronym: state.acronym }, { withCredentials: true })
     if (appResult.data.success) {
       setAppStartDate(new Date(appResult.data.application.app_startDate).toISOString().substr(0, 10))
       setAppEndDate(new Date(appResult.data.application.app_endDate).toISOString().substr(0, 10))
@@ -141,13 +142,12 @@ function PlanOverview() {
       //console.log(taskResult.data.tasks);
       //re-arrange tasks into different state
       for (let k in Object.values(taskResult.data.tasks)) {
-        console.log(k)
-        if (taskResult.data.tasks[k].Task_state === "open") {
+        if (taskResult.data.tasks[k].taskState === "open") {
           //Get the colour of the task based on the plan and append to the array
-          if (taskResult.data.tasks[k].Task_plan) {
-            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].Task_plan }, { withCredentials: true })
+          if (taskResult.data.tasks[k].taskPlan) {
+            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].taskPlan }, { withCredentials: true })
             if (taskPlanColour.data.success) {
-              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plan[0].colour
+              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plans.colour
               setOpen(setOpen => [...setOpen, taskResult.data.tasks[k]])
             } else {
               setOpen(setOpen => [...setOpen, taskResult.data.tasks[k]])
@@ -155,12 +155,12 @@ function PlanOverview() {
           } else {
             setOpen(setOpen => [...setOpen, taskResult.data.tasks[k]])
           }
-        } else if (taskResult.data.tasks[k].Task_state === "todo") {
+        } else if (taskResult.data.tasks[k].taskState === "todo") {
           //Get the colour of the task based on the plan and append to the array
-          if (taskResult.data.tasks[k].Task_plan) {
-            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].Task_plan }, { withCredentials: true })
+          if (taskResult.data.tasks[k].taskPlan) {
+            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].taskPlan }, { withCredentials: true })
             if (taskPlanColour.data.success) {
-              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plan[0].colour
+              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plans.colour
               setTodo(setTodo => [...setTodo, taskResult.data.tasks[k]])
             } else {
               setTodo(setTodo => [...setTodo, taskResult.data.tasks[k]])
@@ -168,12 +168,12 @@ function PlanOverview() {
           } else {
             setTodo(setTodo => [...setTodo, taskResult.data.tasks[k]])
           }
-        } else if (taskResult.data.tasks[k].Task_state === "doing") {
+        } else if (taskResult.data.tasks[k].taskState === "doing") {
           //Get the colour of the task based on the plan and append to the array
-          if (taskResult.data.tasks[k].Task_plan) {
-            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].Task_plan }, { withCredentials: true })
+          if (taskResult.data.tasks[k].taskPlan) {
+            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].taskPlan }, { withCredentials: true })
             if (taskPlanColour.data.success) {
-              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plan[0].colour
+              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plans.colour
               setDoing(setDoing => [...setDoing, taskResult.data.tasks[k]])
             } else {
               console.log("enetered else")
@@ -183,12 +183,12 @@ function PlanOverview() {
             console.log("teem")
             setDoing(setDoing => [...setDoing, taskResult.data.tasks[k]])
           }
-        } else if (taskResult.data.tasks[k].Task_state === "done") {
+        } else if (taskResult.data.tasks[k].taskState === "done") {
           //Get the colour of the task based on the plan and append to the array
-          if (taskResult.data.tasks[k].Task_plan) {
-            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].Task_plan }, { withCredentials: true })
+          if (taskResult.data.tasks[k].taskPlan) {
+            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].taskPlan }, { withCredentials: true })
             if (taskPlanColour.data.success) {
-              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plan[0].colour
+              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plans.colour
               setDone(setDone => [...setDone, taskResult.data.tasks[k]])
             } else {
               setDone(setDone => [...setDone, taskResult.data.tasks[k]])
@@ -196,12 +196,12 @@ function PlanOverview() {
           } else {
             setDone(setDone => [...setDone, taskResult.data.tasks[k]])
           }
-        } else if (taskResult.data.tasks[k].Task_state === "closed") {
+        } else if (taskResult.data.tasks[k].taskState === "closed") {
           //Get the colour of the task based on the plan and append to the array
-          if (taskResult.data.tasks[k].Task_plan) {
-            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].Task_plan }, { withCredentials: true })
+          if (taskResult.data.tasks[k].taskPlan) {
+            const taskPlanColour = await Axios.post("http://localhost:8080/get-plan/planname", { planName: taskResult.data.tasks[k].taskPlan }, { withCredentials: true })
             if (taskPlanColour.data.success) {
-              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plan[0].colour
+              taskResult.data.tasks[k]["colour"] = taskPlanColour.data.plans.colour
               setClosed(setClosed => [...setClosed, taskResult.data.tasks[k]])
             } else {
               setClosed(setClosed => [...setClosed, taskResult.data.tasks[k]])
@@ -221,27 +221,41 @@ function PlanOverview() {
   const srcState = useContext(StateContext)
   const srcDispatch = useContext(DispatchContext)
 
+  async function authorization(){
+    if(srcState.logIn == false){
+      srcDispatch({type:"flashMessage", value:"please login.."});
+      navigate("/")
+    }
+    if (state == null) {
+      return navigate("/")
+    }
+    if (state.acronym == null) {
+      return navigate("/")
+    }
+    setAcronym(state.acronym)
+  }
+
   //useEffect
   useEffect(() => {
-    const getUserInfo = async () => {
-      if (state == null) {
-        return navigate("/")
-      }
-      if (state.acronym == null) {
-        return navigate("/")
-      }
+    // const getUserInfo = async () => {
+    //   if (state == null) {
+    //     return navigate("/")
+    //   }
+    //   if (state.acronym == null) {
+    //     return navigate("/")
+    //   }
 
-      const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-      if (res.data.success) {
-        if (res.data.status == 0) navigate("/login")
-        srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-        setAcronym(state.acronym)
-        //console.log(state.acronym)
-      } else {
-        navigate("/")
-      }
-    }
-    getUserInfo()
+    //   const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
+    //   if (res.data.success) {
+    //     if (res.data.status == 0) navigate("/login")
+    //     srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
+    //     setAcronym(state.acronym)
+    //     //console.log(state.acronym)
+    //   } else {
+    //     navigate("/")
+    //   }
+    // }
+    // getUserInfo()
   }, [])
 
   useEffect(() => {
@@ -256,6 +270,10 @@ function PlanOverview() {
       setAuthorization()
     }
   }, [srcState.username])
+
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   if (onLoad) {
     return (
@@ -330,32 +348,32 @@ function PlanOverview() {
                   <div className="w-full h-5" style={{ background: task.colour }}></div>
                   <div className="px-6 py-1">
                     <div className="flex justify-between">
-                      <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                      <div className="font-bold text-lg mb-1">{task.taskName}</div>
                       <div>
                         <span className="font-bold text-sm">Plan: </span>
-                        {task.Task_plan ? task.Task_plan : "No plan"}
+                        {task.taskPlan ? task.taskPlan : "No plan"}
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">ID:</span> {task.Task_id}
+                        <span className="font-bold">ID:</span> {task.taskId}
                       </span>
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">Owner:</span> {task.Task_owner}
+                        <span className="font-bold">Owner:</span> {task.taskOwner}
                       </span>
                     </div>
                     <div>
                       <TaskModal
-                        Task_name={task.Task_name}
-                        Task_description={task.Task_description}
-                        Task_notes={task.Task_notes}
-                        Task_id={task.Task_id}
-                        Task_plan={task.Task_plan}
-                        Task_app_Acronym={task.Task_app_Acronym}
-                        Task_state={task.Task_state}
-                        Task_creator={task.Task_creator}
-                        Task_owner={task.Task_owner}
-                        Task_createDate={task.Task_createDate}
+                        Task_name={task.taskName}
+                        Task_description={task.taskDescription}
+                        Task_notes={task.taskNotes}
+                        Task_id={task.taskId}
+                        Task_plan={task.taskPlan}
+                        Task_app_Acronym={task.taskAppAcronym}
+                        Task_state={task.taskState}
+                        Task_creator={task.taskCreator}
+                        Task_owner={task.taskOwner}
+                        Task_createDate={task.taskCreateDate}
                       />
                     </div>
                   </div>
@@ -368,7 +386,7 @@ function PlanOverview() {
                           type="button"
                           className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-4 rounded-full h-7 text-center"
                           to={"/pm-update/task"}
-                          state={{ taskId: task.Task_id, acronym: state.acronym, newState: "edit" }}
+                          state={{ taskId: task.taskId, acronym: state.acronym, newState: "edit" }}
                         >
                           Edit
                         </Link>
@@ -377,7 +395,7 @@ function PlanOverview() {
                       )}
 
                       {aOpen && (
-                        <Link type="button" to={"/pm-update/task"} state={{ taskId: task.Task_id, acronym: state.acronym, newState: "release" }}>
+                        <Link type="button" to={"/pm-update/task"} state={{ taskId: task.taskId, acronym: state.acronym, newState: "release" }}>
                           <div class="w-5  overflow-hidden inline-block">
                             <div title="RELEASE" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                           </div>
@@ -397,32 +415,32 @@ function PlanOverview() {
                   <div className="w-full h-5" style={{ background: task.colour }}></div>
                   <div className="px-6 py-1">
                     <div className="flex justify-between">
-                      <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                      <div className="font-bold text-lg mb-1">{task.taskName}</div>
                       <div>
                         <span className="font-bold text-sm">Plan: </span>
-                        {task.Task_plan ? task.Task_plan : "No plan"}
+                        {task.taskPlan ? task.taskPlan : "No plan"}
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">ID:</span> {task.Task_id}
+                        <span className="font-bold">ID:</span> {task.taskId}
                       </span>
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">Owner:</span> {task.Task_owner}
+                        <span className="font-bold">Owner:</span> {task.taskOwner}
                       </span>
                     </div>
                     <div>
                       <TaskModal
-                        Task_name={task.Task_name}
-                        Task_description={task.Task_description}
-                        Task_notes={task.Task_notes}
-                        Task_id={task.Task_id}
-                        Task_plan={task.Task_plan}
-                        Task_app_Acronym={task.Task_app_Acronym}
-                        Task_state={task.Task_state}
-                        Task_creator={task.Task_creator}
-                        Task_owner={task.Task_owner}
-                        Task_createDate={task.Task_createDate}
+                        Task_name={task.taskName}
+                        Task_description={task.taskDescription}
+                        Task_notes={task.taskNotes}
+                        Task_id={task.taskId}
+                        Task_plan={task.taskPlan}
+                        Task_app_Acronym={task.taskAppAcronym}
+                        Task_state={task.taskState}
+                        Task_creator={task.taskCreator}
+                        Task_owner={task.taskOwner}
+                        Task_createDate={task.taskCreateDate}
                       />
                     </div>
                   </div>
@@ -435,7 +453,7 @@ function PlanOverview() {
                           type="button"
                           className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-4 rounded-full h-7 text-center"
                           to={"/team-update/task"}
-                          state={{ taskId: task.Task_id, acronym: state.acronym, newState: "edit" }}
+                          state={{ taskId: task.taskId, acronym: state.acronym, newState: "edit" }}
                         >
                           Edit
                         </Link>
@@ -444,7 +462,7 @@ function PlanOverview() {
                       )}
 
                       {aTodo && (
-                        <Link type="button" to={"/team-update/task"} state={{ taskId: task.Task_id, acronym: state.acronym, newState: "promote" }}>
+                        <Link type="button" to={"/team-update/task"} state={{ taskId: task.taskId, acronym: state.acronym, newState: "promote" }}>
                           <div class="w-5  overflow-hidden inline-block">
                             <div title="PROMOTE" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                           </div>
@@ -464,39 +482,39 @@ function PlanOverview() {
                   <div className="w-full h-5" style={{ background: task.colour }}></div>
                   <div className="px-6 py-1">
                     <div className="flex justify-between">
-                      <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                      <div className="font-bold text-lg mb-1">{task.taskName}</div>
                       <div>
                         <span className="font-bold text-sm">Plan: </span>
-                        {task.Task_plan ? task.Task_plan : "No plan"}
+                        {task.taskPlan ? task.taskPlan : "No plan"}
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">ID:</span> {task.Task_id}
+                        <span className="font-bold">ID:</span> {task.taskId}
                       </span>
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">Owner:</span> {task.Task_owner}
+                        <span className="font-bold">Owner:</span> {task.taskOwner}
                       </span>
                     </div>
                     <div>
                       <TaskModal
-                        Task_name={task.Task_name}
-                        Task_description={task.Task_description}
-                        Task_notes={task.Task_notes}
-                        Task_id={task.Task_id}
-                        Task_plan={task.Task_plan}
-                        Task_app_Acronym={task.Task_app_Acronym}
-                        Task_state={task.Task_state}
-                        Task_creator={task.Task_creator}
-                        Task_owner={task.Task_owner}
-                        Task_createDate={task.Task_createDate}
+                        Task_name={task.taskName}
+                        Task_description={task.taskDescription}
+                        Task_notes={task.taskNotes}
+                        Task_id={task.taskId}
+                        Task_plan={task.taskPlan}
+                        Task_app_Acronym={task.taskAppAcronym}
+                        Task_state={task.taskState}
+                        Task_creator={task.taskCreator}
+                        Task_owner={task.taskOwner}
+                        Task_createDate={task.taskCreateDate}
                       />
                     </div>
                   </div>
                   <div class="px-3 pt-1 pb-1">
                     <div className="flex justify-between">
                       {aDoing ? (
-                        <Link type="button" to={"/team-update/task"} className="" state={{ taskId: task.Task_id, acronym: state.acronym, newState: "return" }}>
+                        <Link type="button" to={"/team-update/task"} className="" state={{ taskId: task.taskId, acronym: state.acronym, newState: "return" }}>
                           <div class="w-5 overflow-hidden inline-block">
                             <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right" title="RETURN"></div>
                           </div>
@@ -510,7 +528,7 @@ function PlanOverview() {
                           type="button"
                           className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-4 rounded-full h-7 text-center"
                           to={"/team-update/task"}
-                          state={{ taskId: task.Task_id, acronym: state.acronym, newState: "edit" }}
+                          state={{ taskId: task.taskId, acronym: state.acronym, newState: "edit" }}
                         >
                           Edit
                         </Link>
@@ -519,7 +537,7 @@ function PlanOverview() {
                       )}
 
                       {aDoing && (
-                        <Link type="button" to={"/team-update/task"} state={{ taskId: task.Task_id, acronym: state.acronym, newState: "promote" }}>
+                        <Link type="button" to={"/team-update/task"} state={{ taskId: task.taskId, acronym: state.acronym, newState: "promote" }}>
                           <div class="w-5  overflow-hidden inline-block">
                             <div title="PROMOTE" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                           </div>
@@ -539,39 +557,39 @@ function PlanOverview() {
                   <div className="w-full h-5" style={{ background: task.colour }}></div>
                   <div className="px-6 py-1">
                     <div className="flex justify-between">
-                      <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                      <div className="font-bold text-lg mb-1">{task.taskName}</div>
                       <div>
                         <span className="font-bold text-sm">Plan: </span>
-                        {task.Task_plan ? task.Task_plan : "No plan"}
+                        {task.taskPlan ? task.taskPlan : "No plan"}
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">ID:</span> {task.Task_id}
+                        <span className="font-bold">ID:</span> {task.taskId}
                       </span>
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">Owner:</span> {task.Task_owner}
+                        <span className="font-bold">Owner:</span> {task.taskOwner}
                       </span>
                     </div>
                     <div>
                       <TaskModal
-                        Task_name={task.Task_name}
-                        Task_description={task.Task_description}
-                        Task_notes={task.Task_notes}
-                        Task_id={task.Task_id}
-                        Task_plan={task.Task_plan}
-                        Task_app_Acronym={task.Task_app_Acronym}
-                        Task_state={task.Task_state}
-                        Task_creator={task.Task_creator}
-                        Task_owner={task.Task_owner}
-                        Task_createDate={task.Task_createDate}
+                        Task_name={task.taskName}
+                        Task_description={task.taskDescription}
+                        Task_notes={task.taskNotes}
+                        Task_id={task.taskId}
+                        Task_plan={task.taskPlan}
+                        Task_app_Acronym={task.taskAppAcronym}
+                        Task_state={task.taskState}
+                        Task_creator={task.taskCreator}
+                        Task_owner={task.taskOwner}
+                        Task_createDate={task.taskCreateDate}
                       />
                     </div>
                   </div>
                   <div class="px-3 pt-1 pb-1">
                     <div className="flex justify-between">
                       {aDone ? (
-                        <Link type="button" to={"/pl-update/task"} className="" state={{ taskId: task.Task_id, acronym: state.acronym, newState: "reject" }}>
+                        <Link type="button" to={"/pl-update/task"} className="" state={{ taskId: task.taskId, acronym: state.acronym, newState: "reject" }}>
                           <div class="w-5 overflow-hidden inline-block">
                             <div class=" h-10 hover:bg-slate-500 bg-black -rotate-45 transform origin-top-right" title="REJECT"></div>
                           </div>
@@ -585,7 +603,7 @@ function PlanOverview() {
                           type="button"
                           className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-4 rounded-full h-7 text-center"
                           to={"/pl-update/task"}
-                          state={{ taskId: task.Task_id, acronym: state.acronym, newState: "edit" }}
+                          state={{ taskId: task.taskId, acronym: state.acronym, newState: "edit" }}
                         >
                           Edit
                         </Link>
@@ -594,7 +612,7 @@ function PlanOverview() {
                       )}
 
                       {aDone && (
-                        <Link type="button" to={"/pl-update/task"} state={{ taskId: task.Task_id, acronym: state.acronym, newState: "accept" }}>
+                        <Link type="button" to={"/pl-update/task"} state={{ taskId: task.taskId, acronym: state.acronym, newState: "accept" }}>
                           <div class="w-5  overflow-hidden inline-block">
                             <div title="ACCEPT" class=" h-10 hover:bg-slate-500 bg-black rotate-45 transform origin-top-left"></div>
                           </div>
@@ -614,32 +632,32 @@ function PlanOverview() {
                   <div className="w-full h-5" style={{ background: task.colour }}></div>
                   <div class="px-6 py-1">
                     <div className="flex justify-between">
-                      <div className="font-bold text-lg mb-1">{task.Task_name}</div>
+                      <div className="font-bold text-lg mb-1">{task.taskName}</div>
                       <div>
                         <span className="font-bold text-sm">Plan: </span>
-                        {task.Task_plan ? task.Task_plan : "No plan"}
+                        {task.taskPlan ? task.taskPlan : "No plan"}
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">ID:</span> {task.Task_id}
+                        <span className="font-bold">ID:</span> {task.taskId}
                       </span>
                       <span className="text-gray-700 text-sm">
-                        <span className="font-bold">Owner:</span> {task.Task_owner}
+                        <span className="font-bold">Owner:</span> {task.taskOwner}
                       </span>
                     </div>
                     <div>
                       <TaskModal
-                        Task_name={task.Task_name}
-                        Task_description={task.Task_description}
-                        Task_notes={task.Task_notes}
-                        Task_id={task.Task_id}
-                        Task_plan={task.Task_plan}
-                        Task_app_Acronym={task.Task_app_Acronym}
-                        Task_state={task.Task_state}
-                        Task_creator={task.Task_creator}
-                        Task_owner={task.Task_owner}
-                        Task_createDate={task.Task_createDate}
+                        Task_name={task.taskName}
+                        Task_description={task.taskDescription}
+                        Task_notes={task.taskNotes}
+                        Task_id={task.taskId}
+                        Task_plan={task.taskPlan}
+                        Task_app_Acronym={task.taskAppAcronym}
+                        Task_state={task.taskState}
+                        Task_creator={task.taskCreator}
+                        Task_owner={task.taskOwner}
+                        Task_createDate={task.taskCreateDate}
                       />
                     </div>
                   </div>

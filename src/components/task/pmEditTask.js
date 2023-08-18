@@ -160,14 +160,14 @@ function PmEditTask() {
         navigate(-1)
       }
 
-      const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-      if (res.data.success) {
-        if (res.data.status == 0) navigate("/login")
-        srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-      } else {
-        srcDispatch({ type: "logout" })
-        navigate("/")
-      }
+      // const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
+      // if (res.data.success) {
+      //   if (res.data.status == 0) navigate("/login")
+      //   srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
+      // } else {
+      //   srcDispatch({ type: "logout" })
+      //   navigate("/")
+      // }
     }
     getUserInfo()
     getTask()
