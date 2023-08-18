@@ -69,7 +69,7 @@ function CreateTask() {
     }
 
     //get app
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
     //console.log(appResult);
     if (!appResult.data.success) {
       srcDispatch({ type: "flashMessage", value: "Invalid app acronym" })
@@ -83,7 +83,7 @@ function CreateTask() {
       if (state.acronym) setAcronym(state.acronym)
 
       const planResult = await Axios.post("http://localhost:8080/all-plan/app", { app_Acronym: state.acronym }, { withCredentials: true })
-      const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym })
+      const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym })
       if (planResult.data.success) {
         setPlans(planResult.data.plans)
       }
@@ -120,7 +120,7 @@ function CreateTask() {
       if (res.data.success) {
         if (res.data.status == 0) navigate("/login")
         srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-        const checkOpenPermit = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+        const checkOpenPermit = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
         if (checkOpenPermit.length < 0) {
           navigate("/")
         }

@@ -50,7 +50,7 @@ function PmEditTask() {
         srcDispatch({ type: "flashMessage", value: "Unauthorized" })
         return
       } else {
-        permit_g = await Axios.post("http://localhost:8080/get-application", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
+        permit_g = await Axios.post("http://localhost:8080/getApplication", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
       }
 
       const result = await Axios.post(

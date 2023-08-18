@@ -83,7 +83,7 @@ function CreatePlan() {
     }
 
     //get app
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
     if (!appResult.data.success) {
       srcDispatch({ type: "flashMessage", value: "Invalid app acronym" })
       navigate(-1)
