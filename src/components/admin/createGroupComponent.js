@@ -22,9 +22,11 @@ function CreateGroup() {
       e.preventDefault();
       try{
         const res = await Axios.post("http://localhost:8080/createAccGroup", {groupName:formGroup, un:srcState.username, gn:"admin"}, {withCredentials:true});
-        if(res.data){
+        if(res.data.success){
           srcDispatch({type:"flashMessage", value:"Group created"});
-          setFormGroup("test");
+          // setFormGroup("test");
+          setFormGroup("");
+          document.getElementById("groupName").value = ""
           getAllGroups();
         }
       }
@@ -77,6 +79,7 @@ function CreateGroup() {
             <input
               type="text"
               name="groupName"
+              id="groupName"
               maxLength={100}
               onChange={e => setFormGroup(e.target.value)}
               className="px-2 py-1 placeholder-slate-300 text-slate-600 relative bg-white rounded text-sm border-2 mr-2 shadow outline-none focus:outline-none focus:ring"
