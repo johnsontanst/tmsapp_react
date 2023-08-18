@@ -66,7 +66,7 @@ function CreateGroup() {
           <span className="text-md block">All groups</span>
           <select multiple size={3} id="allgroups" className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-60 p-2.5">
             {allGroups.map((group, index) => (
-              <option key={index}>{group.groupName}</option>
+              <option key={index}>{group}</option>
             ))}
           </select>
         </div>

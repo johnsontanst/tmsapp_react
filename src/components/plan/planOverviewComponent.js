@@ -55,7 +55,7 @@ function PlanOverview() {
   //Set authroization
   async function setAuthorization() {
     //Get application
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/get-application", { appAcronym: state.acronym }, { withCredentials: true })
 
     if (appResult.data.success) {
       //Check if current user got permission for create

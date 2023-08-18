@@ -76,10 +76,10 @@ function CreateAccount() {
     }
   }
 
-    //useEffect
-    useEffect(()=>{
-      if(srcState.testLoginComplete) authorization();
-    },[srcState.testLoginComplete])
+  //useEffect
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   useEffect(() => {
     if (srcState.isAdmin) getAllgroups()

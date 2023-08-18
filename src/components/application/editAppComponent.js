@@ -109,19 +109,26 @@ function EditApp() {
     }
   }
 
+  async function authorization(){
+    if(srcState.isPL == false || srcState.logIn == false){
+      srcDispatch({type:"flashMessage", value:"Unauthorized"});
+      navigate("/")
+    }
+  }
+
   //context
   const srcState = useContext(StateContext)
   const srcDispatch = useContext(DispatchContext)
 
   //useEffect
   useEffect(() => {
-    const getUserInfo = async () => {
-      const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
-      if (res.data.success) {
-        srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
-      }
-    }
-    getUserInfo()
+    // const getUserInfo = async () => {
+    //   const res = await Axios.post("http://localhost:8080/authtoken/return/userinfo", {}, { withCredentials: true })
+    //   if (res.data.success) {
+    //     srcDispatch({ type: "login", value: res.data, admin: res.data.groups.includes("admin") })
+    //   }
+    // }
+    // getUserInfo()
   }, [])
 
   useEffect(() => {
@@ -133,6 +140,10 @@ function EditApp() {
   useEffect(() => {
     getApp()
   }, [groups])
+
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   return (
     <>

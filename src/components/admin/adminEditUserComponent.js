@@ -99,6 +99,13 @@ function AdminEditUser() {
       srcDispatch({ type: "flashMessage", value: "Error in updating profile" })
     }
   }
+  
+  async function authorization(){
+    console.log(srcState.isAdmin == false)
+    if(srcState.isAdmin == false || srcState.logIn == false){
+      navigate("/")
+    }
+  }
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -116,6 +123,10 @@ function AdminEditUser() {
     }
     getUserInfo()
   }, [])
+
+  useEffect(()=>{
+    if(srcState.testLoginComplete) authorization();
+  },[srcState.testLoginComplete])
 
   return (
     <>
