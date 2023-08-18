@@ -68,7 +68,7 @@ function EditApp() {
   //Get app
   async function getApp() {
     //Axios app
-    const appResult = await Axios.post("http://localhost:8080/get-application", { acronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
 
     //Set app
     if (appResult.data.success) {

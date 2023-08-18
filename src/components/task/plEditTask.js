@@ -41,7 +41,7 @@ function PlEditTask() {
     e.preventDefault()
     try {
       let gn
-      const permit_g = await Axios.post("http://localhost:8080/get-application", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
+      const permit_g = await Axios.post("http://localhost:8080/getApplication", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
       //Get group for check group
       if (permit_g.data.apps[0].App_Acronym) {
         gn = permit_g.data.apps[0].App_permit_Done
