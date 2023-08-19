@@ -55,7 +55,7 @@ function PlanOverview() {
   //Set authroization
   async function setAuthorization() {
     //Get application
-    const appResult = await Axios.post("http://localhost:8080/get-application", { appAcronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
     console.log(appResult);
 
     if (appResult.data.success) {
@@ -117,7 +117,7 @@ function PlanOverview() {
     }
 
     //Axios get app
-    const appResult = await Axios.post("http://localhost:8080/get-application", { appAcronym: state.acronym }, { withCredentials: true })
+    const appResult = await Axios.post("http://localhost:8080/getApplication", { appAcronym: state.acronym }, { withCredentials: true })
     if (appResult.data.success) {
       setAppStartDate(new Date(appResult.data.application.app_startDate).toISOString().substr(0, 10))
       setAppEndDate(new Date(appResult.data.application.app_endDate).toISOString().substr(0, 10))
@@ -344,7 +344,7 @@ function PlanOverview() {
               <h1 className="text-lg font-bold bg-sky-200 text-center">OPEN</h1>
 
               {open.map((task, index) => (
-                <div class="w-full overflow-hidden shadow-lg mt-3 border">
+                <div key={index} class="w-full overflow-hidden shadow-lg mt-3 border">
                   <div className="w-full h-5" style={{ background: task.colour }}></div>
                   <div className="px-6 py-1">
                     <div className="flex justify-between">

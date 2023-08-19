@@ -41,24 +41,27 @@ function PlEditTask() {
     e.preventDefault()
     try {
       let gn
-      const permit_g = await Axios.post("http://localhost:8080/getApplication", { acronym: thisTask.Task_app_Acronym }, { withCredentials: true })
+      const permit_g = await Axios.post("http://localhost:8080/getApplication", { appAcronym: thisTask.taskAppAcronym }, { withCredentials: true })
       //Get group for check group
-      if (permit_g.data.apps[0].App_Acronym) {
-        gn = permit_g.data.apps[0].App_permit_Done
+      if (permit_g.data.application.app_Acronym) {
+        gn = permit_g.data.application.app_permit_Done
       }
+      console.log({ taskId: thisTask.taskId, un: srcState.username, gn, userNotes: taskNotes, taskState: newState, acronym: thisTask.taskAppAcronym, plan: taskPlan });
       //console.log(newState)
       const result = await Axios.post(
         "http://localhost:8080/pl-update/task",
-        { taskId: thisTask.Task_id, un: srcState.username, gn, userNotes: taskNotes, taskState: newState, acronym: thisTask.Task_app_Acronym, plan: taskPlan },
+        { taskId: thisTask.taskId, un: srcState.username, gn, userNotes: taskNotes, taskState: newState, acronym: thisTask.taskAppAcronym, plan: taskPlan },
         { withCredentials: true }
       )
+
+      
 
       if (result.data.success) {
         srcDispatch({ type: "flashMessage", value: "Task updated" })
         return navigate(-1)
       }
     } catch (err) {
-      console.log(err.response.data.message)
+      // console.log(err.response.data.message)
       if (err.response.data.message === "unable to edit task") {
         srcDispatch({ type: "flashMessage", value: "Unable to update task, please check the task state." })
       } else if (err.response.data.message === "invalid task id") {
@@ -91,23 +94,24 @@ function PlEditTask() {
     try {
       const taskResult = await Axios.post("http://localhost:8080/all-task/taskId", { taskId: state.taskId }, { withCredentials: true })
       if (taskResult.data.success) {
-        setThisTask(taskResult.data.task[0])
+        console.log("taskResult", taskResult)
+        setThisTask(taskResult.data.task)
         //console.log(taskResult.data.task[0])
 
         //Re-arranging the history notes
-        var tempHistory = String(taskResult.data.task[0].Task_notes).split("||")
+        var tempHistory = String(taskResult.data.task.taskNotes).split("||")
         tempHistory = tempHistory.reverse()
         for (const k in tempHistory) {
           setHistoryNotes(setHistoryNotes => [...setHistoryNotes, String(tempHistory[k]).split("|")])
         }
 
         //Set task plan
-        setTaskPlan(taskResult.data.task[0].Task_plan)
+        setTaskPlan(taskResult.data.task.taskPlan)
 
         //Set new state
         if (state.newState === "edit") {
           console.log("edit")
-          setNewState(taskResult.data.task[0].Task_state)
+          setNewState(taskResult.data.task.taskState)
         } else if (state.newState === "accept") {
           console.log("closed")
           setNewState("closed")
@@ -130,7 +134,8 @@ function PlEditTask() {
   //Get plans by acronym
   async function getPlans() {
     try {
-      const planResult = await Axios.post("http://localhost:8080/all-plan/app", { app_Acronym: state.acronym }, { withCredentials: true })
+      const planResult = await Axios.post("http://localhost:8080/all-plan/app", { appAcronym: state.acronym }, { withCredentials: true })
+      console.log("planResult", planResult)
 
       if (planResult.data.success) {
         setPlans(planResult.data.plans)
@@ -202,7 +207,7 @@ function PlEditTask() {
               </label>
               <input
                 type="text"
-                value={thisTask.Task_name}
+                value={thisTask.taskName}
                 id="taskName"
                 className="bg-stone-400 border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Task name..."
@@ -215,7 +220,7 @@ function PlEditTask() {
                 Task description
               </label>
               <textarea
-                value={thisTask.Task_description}
+                value={thisTask.taskDescription}
                 id="desc"
                 rows="4"
                 className="block p-2.5 w-full text-sm text-white bg-stone-400 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -251,14 +256,14 @@ function PlEditTask() {
                   >
                     <option value=""></option>
                     {plans.map((plan, index) => {
-                      if (thisTask.Task_plan === plan.Plan_MVP_name) {
+                      if (thisTask.taskPlan === plan.plan_MVP_name) {
                         return (
-                          <option value={plan.Plan_MVP_name} selected>
-                            {plan.Plan_MVP_name}
+                          <option value={plan.plan_MVP_name} selected>
+                            {plan.plan_MVP_name}
                           </option>
                         )
                       } else {
-                        return <option value={plan.Plan_MVP_name}>{plan.Plan_MVP_name}</option>
+                        return <option value={plan.plan_MVP_name}>{plan.plan_MVP_name}</option>
                       }
                     })}
                   </select>
@@ -270,14 +275,14 @@ function PlEditTask() {
                   >
                     <option value=""></option>
                     {plans.map((plan, index) => {
-                      if (thisTask.Task_plan === plan.Plan_MVP_name) {
+                      if (thisTask.taskPlan === plan.plan_MVP_name) {
                         return (
-                          <option value={plan.Plan_MVP_name} selected>
-                            {plan.Plan_MVP_name}
+                          <option value={plan.plan_MVP_name} selected>
+                            {plan.plan_MVP_name}
                           </option>
                         )
                       } else {
-                        return <option value={plan.Plan_MVP_name}>{plan.Plan_MVP_name}</option>
+                        return <option value={plan.plan_MVP_name}>{plan.plan_MVP_name}</option>
                       }
                     })}
                   </select>
@@ -286,7 +291,7 @@ function PlEditTask() {
               <div>
                 <p>
                   <span className="text-md font-semibold">Application acronym: </span>
-                  {thisTask.Task_app_Acronym}
+                  {thisTask.taskAppAcronym}
                 </p>
                 <p>
                   <span className="text-md font-semibold">Create date: </span>
@@ -294,15 +299,15 @@ function PlEditTask() {
                 </p>
                 <p>
                   <span className="text-md font-semibold">Task creator </span>
-                  {thisTask.Task_creator}
+                  {thisTask.taskCreator}
                 </p>
                 <p>
                   <span className="text-md font-semibold">Task owner: </span>
-                  {thisTask.Task_owner}
+                  {thisTask.taskOwner}
                 </p>
                 <p>
                   <span className="text-md font-semibold">Current task state: </span>
-                  {thisTask.Task_state}
+                  {thisTask.taskState}
                 </p>
               </div>
             </div>
@@ -334,6 +339,7 @@ function PlEditTask() {
                             </tr>
                           </thead>
                           <tbody className="h-96 overflow-y-auto">
+                            //TODO: fix bug with notes
                             {historyNotes.map((note, index) => (
                               <tr key={index} className="p-2">
                                 <td className="bg-stone-100">{note[0]}</td>
