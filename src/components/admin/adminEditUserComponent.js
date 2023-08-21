@@ -91,7 +91,8 @@ function AdminEditUser() {
       return navigate("/")
     }
     e.preventDefault()
-    if (username == "admin" && !groups.includes("admin")) {
+    console.log(!groups.map(x => (x = x.groupName)).includes("admin"))
+    if (username == "admin" && !groups.map(x => (x = x.groupName)).includes("admin")) {
       srcDispatch({ type: "flashMessage", value: "Unable to remove admin group" })
       return
     }
@@ -145,7 +146,6 @@ function AdminEditUser() {
   useEffect(() => {
     if (srcState.testLoginComplete) authorization()
   }, [srcState.testLoginComplete])
-
   return (
     <>
       <div className="grid grid-cols-3 grid-row-2">
@@ -183,7 +183,9 @@ function AdminEditUser() {
             </label>
             <select multiple={true} value={groups.groupName} onChange={handleGroupChange} id="groups" name="groups">
               {allgroups.map(group => (
-                <option value={group.groupName}>{group.groupName}</option>
+                <option value={group.groupName} selected={groups.some(selectedGroup => selectedGroup.groupName === group.groupName)}>
+                  {group.groupName}
+                </option>
               ))}
             </select>
 
