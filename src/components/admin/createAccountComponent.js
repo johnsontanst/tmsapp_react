@@ -23,21 +23,38 @@ function CreateAccount() {
   async function handleSubmit(e) {
     e.preventDefault()
     try {
-      const res = await Axios.post("http://localhost:8080/api/accounts/create", { account: {username, password, email, status, groups}, un: srcState.username, gn: "admin", status }, { withCredentials: true })
-      if (res.data.success) {
-        srcDispatch({ type: "flashMessage", value: "account created" })
-        //Reset useState fields and reset input fields
-        setUsername("")
-        setPassword("")
-        setEmail("")
-        setGroups([])
-        setStatus(1)
-        document.getElementById("floating_username").value = ""
-        document.getElementById("floating_email").value = ""
-        document.getElementById("floating_password").value = ""
-        document.getElementById("groups_multiple").value = ""
+      const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,10}$/
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!passwordRegex.test(password)) {
+        //fail cases
+        srcDispatch({ type: "flashMessage", value: "Invalid password" })
+      } else if (email && email.length !== 0) {
+        if (!emailRegex.test(email)) {
+          srcDispatch({ type: "flashMessage", value: "Invalid email" })
+        }
+      } else {
+        const res = await Axios.post(
+          "http://localhost:8080/api/accounts/create",
+          { account: { username, password, email, status, groups }, un: srcState.username, gn: "admin", status },
+          { withCredentials: true }
+        )
+        if (res.data.success) {
+          srcDispatch({ type: "flashMessage", value: "account created" })
+          //Reset useState fields and reset input fields
+          setUsername("")
+          setPassword("")
+          setEmail("")
+          setGroups([])
+          setStatus(1)
+          document.getElementById("floating_username").value = ""
+          document.getElementById("floating_email").value = ""
+          document.getElementById("floating_password").value = ""
+          document.getElementById("groups_multiple").value = ""
 
-        navigate("/create/account")
+          navigate("/create/account")
+        } else {
+          srcDispatch({ type: "flashMessage", value: res.data.message })
+        }
       }
     } catch (e) {
       console.log(e.response.data.message)
@@ -53,34 +70,34 @@ function CreateAccount() {
     }
   }
 
-    //Get all groups
-    async function getAllgroups(){
-      const res = await Axios.post("http://localhost:8080/getAllGroups",{un:srcState.username, gn:"admin"},{withCredentials:true});
-      console.log(res.data);
-      if(res.data.groups) {
-        setAllGroups(res.data.groups);
-      }
+  //Get all groups
+  async function getAllgroups() {
+    const res = await Axios.post("http://localhost:8080/getAllGroups", { un: srcState.username, gn: "admin" }, { withCredentials: true })
+    console.log(res.data)
+    if (res.data.groups) {
+      setAllGroups(res.data.groups)
     }
+  }
 
   //update selected group onChange
   function handleGroupChange(tt) {
-    const updatedOptions = [...tt.target.options].filter(option => option.selected).map(x => ({"groupName": x.value}))
+    const updatedOptions = [...tt.target.options].filter(option => option.selected).map(x => ({ groupName: x.value }))
     console.log(updatedOptions)
 
     setGroups(updatedOptions)
   }
 
-  async function authorization(){
+  async function authorization() {
     console.log(srcState.isAdmin == false)
-    if(srcState.isAdmin == false || srcState.logIn == false){
+    if (srcState.isAdmin == false || srcState.logIn == false) {
       navigate("/")
     }
   }
 
   //useEffect
-  useEffect(()=>{
-    if(srcState.testLoginComplete) authorization();
-  },[srcState.testLoginComplete])
+  useEffect(() => {
+    if (srcState.testLoginComplete) authorization()
+  }, [srcState.testLoginComplete])
 
   useEffect(() => {
     if (srcState.isAdmin) getAllgroups()
@@ -158,10 +175,19 @@ function CreateAccount() {
           </select>
         </div>
         <div className="relative z-0 w-full mb-6 group">
-          <label for="groups_multiple" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select group/s</label>
-          <select multiple onChange={handleGroupChange} id="groups_multiple" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            {allGroups.map((group, index)=>(
-              <option key={index} value={group}>{group}</option>
+          <label for="groups_multiple" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Select group/s
+          </label>
+          <select
+            multiple
+            onChange={handleGroupChange}
+            id="groups_multiple"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            {allGroups.map((group, index) => (
+              <option key={index} value={group}>
+                {group}
+              </option>
             ))}
           </select>
         </div>
