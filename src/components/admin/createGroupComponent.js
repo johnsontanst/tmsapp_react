@@ -10,7 +10,7 @@ import CreateAccount from "./createAccountComponent"
 
 function CreateGroup() {
   const [allGroups, setAllGroups] = useState([])
-  const [formGroup, setFormGroup] = useState([])
+  const [formGroup, setFormGroup] = useState("")
 
   //context
   const srcState = useContext(StateContext)
@@ -21,16 +21,21 @@ function CreateGroup() {
   async function handleSubmit(e) {
     e.preventDefault()
     try {
-      const res = await Axios.post("http://localhost:8080/createAccGroup", { groupName: formGroup, un: srcState.username, gn: "admin" }, { withCredentials: true })
-      if (res.data.success) {
-        console.log("res ", res)
-        srcDispatch({ type: "flashMessage", value: "Group created" })
-        // setFormGroup("test");
-        setFormGroup("")
-        document.getElementById("groupName").value = ""
-        getAllGroups()
+      const trimmedgroup = formGroup.trim()
+      if (trimmedgroup.length === 0) {
+        srcDispatch({ type: "flashMessage", value: "Enter group name" })
       } else {
-        srcDispatch({ type: "flashMessage", value: "Error in creating group" })
+        const res = await Axios.post("http://localhost:8080/createAccGroup", { groupName: trimmedgroup, un: srcState.username, gn: "admin" }, { withCredentials: true })
+        if (res.data.success) {
+          console.log("res ", res)
+          srcDispatch({ type: "flashMessage", value: "Group created" })
+          // setFormGroup("test");
+          setFormGroup("")
+          document.getElementById("groupName").value = ""
+          getAllGroups()
+        } else {
+          srcDispatch({ type: "flashMessage", value: "Group exist, enter another group name" })
+        }
       }
     } catch (e) {
       srcDispatch({ type: "flashMessage", value: "Error in creating group" })
